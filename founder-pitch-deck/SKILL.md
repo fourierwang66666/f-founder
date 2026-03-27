@@ -14,6 +14,22 @@ args:
     required: false
 ---
 
+## Preamble (run first)
+
+```bash
+_FF_DIR="${FFOUNDER_DIR:-$(find ~/.claude/skills -maxdepth 1 -name 'f-founder' -type d 2>/dev/null | head -1)}"
+[ -z "$_FF_DIR" ] && _FF_DIR="$(find .claude/skills -maxdepth 1 -name 'f-founder' -type d 2>/dev/null | head -1)"
+if [ -n "$_FF_DIR" ] && [ -f "$_FF_DIR/bin/f-founder-update-check" ]; then
+  _UPD=$("$_FF_DIR/bin/f-founder-update-check" 2>/dev/null || true)
+  [ -n "$_UPD" ] && echo "$_UPD" || true
+fi
+```
+
+If output shows `UPGRADE_AVAILABLE <old> <new>`: tell the user
+"f-founder v{new} is available (you have v{old}). Run `cd ~/.claude/skills/f-founder && git pull` to upgrade."
+
+---
+
 # founder-pitch-deck: Startup Pitch Deck Generator
 
 Generate a single-file HTML pitch deck that looks like it was designed by a top-tier agency. The workflow walks the founder through 8 steps: design extraction, content input, copy confirmation, narrative review, slide structure design, HTML generation, visual QA, and deployment.
