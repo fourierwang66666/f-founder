@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{DECK_TITLE}}</title>
+{{GOOGLE_FONTS_LINK}}
+<style>
+/* ── Reset ── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+/* ── Design Tokens ── */
+:root{
+  --primary:{{PRIMARY}};
+  --primary-dark:{{PRIMARY_DARK}};
+  --accent:{{ACCENT}};
+  --bg:{{BG}};
+  --bg-warm:{{BG_WARM}};
+  --text:{{TEXT}};
+  --text-mid:{{TEXT_MID}};
+  --text-light:{{TEXT_LIGHT}};
+  --border:{{BORDER}};
+  --border-mid:rgba(0,0,0,0.25);
+  --shadow:3px 3px 0 0 rgba(0,0,0,0.8);
+  --shadow-hover:4px 4px 0 0 rgba(0,0,0,0.8);
+  --font-main:{{FONT_MAIN}};
+  --font-serif:{{FONT_SERIF}};
+  --slide-w:1280px;
+  --slide-h:720px;
+}
+
+body{
+  font-family:var(--font-main);
+  background:#1a1a1a;
+  color:var(--text);
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100vh;height:100dvh;
+  width:100vw;
+}
+
+/* ── Slide Container ── */
+.deck{position:relative;width:var(--slide-w);height:var(--slide-h);transform-origin:center center}
+.slide{
+  position:absolute;inset:0;
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  padding:60px 80px;
+  opacity:0;pointer-events:none;visibility:hidden;
+  transition:opacity 0.4s ease,visibility 0s 0.4s;
+  overflow:hidden;
+}
+.slide.active{opacity:1;pointer-events:auto;visibility:visible;transition:opacity 0.4s ease,visibility 0s 0s}
+.slide.dark{background:#1a1a1a;color:rgba(255,255,255,0.9)}
+.slide.red{background:var(--primary);color:#fffee1}
+
+/* ── Typography ── */
+h1{font-size:44px;font-weight:500;line-height:1.25;letter-spacing:-0.5px}
+h2{font-size:32px;font-weight:500;line-height:1.3;margin-bottom:8px}
+h3{font-size:20px;font-weight:500;line-height:1.4;margin-bottom:6px}
+p{font-size:16px;line-height:1.65;color:var(--text-mid)}
+.slide.dark p,.slide.red p{color:rgba(255,255,255,0.65)}
+.slide.dark h2,.slide.dark h3{color:#fff}
+.slide.red h1,.slide.red h2{color:#fffee1}
+
+.eyebrow{
+  font-size:13px;font-weight:500;letter-spacing:2px;
+  text-transform:uppercase;color:var(--text-light);
+  margin-bottom:16px;
+}
+.slide.dark .eyebrow{color:rgba(255,255,255,0.4)}
+.slide.red .eyebrow{color:rgba(255,254,225,0.6)}
+
+.stat-big{font-size:56px;font-weight:500;line-height:1.1}
+.stat-label{font-size:14px;color:var(--text-light);margin-top:4px}
+
+.quote{
+  font-family:var(--font-serif);
+  font-style:italic;font-size:20px;line-height:1.6;
+  color:var(--text);
+}
+.slide.dark .quote{color:rgba(255,255,255,0.75)}
+
+/* ── Tags ── */
+.tag{
+  display:inline-block;
+  padding:4px 12px;border-radius:1px;
+  font-size:13px;font-weight:500;
+  background:rgba(0,0,0,0.06);color:var(--text-mid);
+}
+.tag.green{background:rgba(15,142,97,0.12);color:var(--accent)}
+.tag.orange{background:rgba(203,74,0,0.12);color:#cb4a00}
+.tag.red-tag{background:rgba(218,61,61,0.1);color:var(--primary)}
+
+/* ── Layout Helpers ── */
+.flex{display:flex;gap:32px}
+.flex-3{display:flex;gap:24px}
+.flex-4{display:flex;gap:20px}
+.col{flex:1}
+.center{text-align:center;align-items:center;justify-content:center}
+.space-between{justify-content:space-between}
+.grow{flex:1}
+.mt-auto{margin-top:auto}
+.mt-8{margin-top:8px}
+.mt-16{margin-top:16px}
+.mt-24{margin-top:24px}
+.mt-32{margin-top:32px}
+.mt-40{margin-top:40px}
+.mb-8{margin-bottom:8px}
+.mb-16{margin-bottom:16px}
+
+/* ── Cards ── */
+.card{
+  background:var(--bg-warm);
+  border:0.5px solid var(--border);
+  border-radius:2px;padding:24px;
+  flex:1;
+}
+.card-dark{
+  background:rgba(255,255,255,0.06);
+  border:0.5px solid rgba(255,255,255,0.1);
+  border-radius:2px;padding:24px;flex:1;
+}
+
+/* ── Dividers ── */
+.gold-line{
+  width:48px;height:2px;
+  background:linear-gradient(90deg,var(--primary),#e8a04c);
+  margin:20px 0;
+}
+
+/* ── Number Circle ── */
+.num{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--primary);color:#fffee1;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:500;flex-shrink:0;
+}
+
+/* ── Quadrant Chart ── */
+.quadrant{
+  position:relative;width:480px;height:360px;
+  margin:0 auto;
+}
+.q-axis-x,.q-axis-y{position:absolute;background:rgba(0,0,0,0.12)}
+.q-axis-x{left:0;right:0;top:50%;height:1px}
+.q-axis-y{top:0;bottom:0;left:50%;width:1px}
+.q-label{position:absolute;font-size:12px;color:var(--text-light)}
+.q-dot{
+  position:absolute;padding:8px 14px;border-radius:2px;
+  font-size:13px;font-weight:500;white-space:nowrap;
+  transform:translate(-50%,-50%);
+}
+.q-dot.highlight{background:var(--primary);color:#fffee1;box-shadow:var(--shadow)}
+.q-dot.other{background:rgba(0,0,0,0.06);color:var(--text-mid)}
+
+/* ── Timeline ── */
+.timeline{display:flex;align-items:flex-start;gap:0;position:relative}
+.timeline::before{
+  content:'';position:absolute;top:16px;left:40px;right:40px;
+  height:2px;background:linear-gradient(90deg,var(--primary),#e8a04c,var(--accent));
+}
+.phase{flex:1;text-align:center;position:relative;padding-top:44px}
+.phase-dot{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--primary);color:#fffee1;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:500;
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  z-index:1;
+}
+.phase:nth-child(2) .phase-dot{background:#e8a04c}
+.phase:nth-child(3) .phase-dot{background:var(--accent)}
+
+/* ── Architecture Diagram ── */
+.arch-box{
+  border:1.5px solid var(--border-mid);
+  border-radius:2px;padding:16px 20px;
+  text-align:center;font-size:14px;font-weight:500;
+}
+.arch-box.primary{border-color:var(--primary);background:rgba(218,61,61,0.06)}
+.arch-arrow{
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:var(--text-light);padding:0 8px;
+}
+
+/* ── Footer Nav ── */
+.slide-nav{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  display:flex;gap:6px;z-index:100;
+}
+.slide-nav button{
+  width:8px;height:8px;border-radius:50%;border:none;
+  background:rgba(255,255,255,0.25);cursor:pointer;
+  transition:all 0.15s ease;
+}
+.slide-nav button.active{background:var(--primary);width:24px;border-radius:4px}
+
+.slide-counter{
+  position:fixed;bottom:22px;right:40px;
+  font-size:13px;color:rgba(255,255,255,0.35);z-index:100;
+}
+
+/* ── Logo ── */
+.logo{font-size:22px;font-weight:500;color:var(--text-light);letter-spacing:1px}
+.slide.dark .logo,.slide.red .logo{color:rgba(255,255,255,0.35)}
+
+/* ── Special Slides ── */
+.cover-tagline{
+  font-size:64px;font-weight:500;line-height:1.15;
+  letter-spacing:-1px;
+}
+.cover-sub{font-size:20px;font-weight:300;margin-top:12px}
+
+/* ── Metric Grid ── */
+.metric{text-align:center;flex:1}
+.metric-num{font-size:40px;font-weight:500;color:var(--primary)}
+.metric-label{font-size:14px;color:var(--text-mid);margin-top:4px}
+
+/* ── Pain Point Row ── */
+.pain-row{
+  display:flex;align-items:flex-start;gap:16px;
+  padding:16px 0;
+  border-bottom:0.5px solid rgba(0,0,0,0.08);
+}
+.pain-row:last-child{border-bottom:none}
+.pain-icon{font-size:24px;flex-shrink:0;width:32px;text-align:center}
+.pain-title{font-size:16px;font-weight:500}
+.pain-desc{font-size:14px;color:var(--text-mid);margin-top:4px}
+.pain-quote{font-size:13px;color:var(--text-light);margin-top:6px;font-style:italic}
+
+/* ── Capability Card ── */
+.cap-card{
+  flex:1;padding:24px;
+  background:var(--bg-warm);
+  border:0.5px solid var(--border);
+  border-radius:2px;
+}
+.cap-card h3{font-size:16px;margin-bottom:8px}
+.cap-card p{font-size:13px;line-height:1.55}
+.cap-card .cap-items{list-style:none;padding:0}
+.cap-card .cap-items li{
+  font-size:13px;color:var(--text-mid);
+  padding:4px 0;line-height:1.45;
+}
+.cap-card .cap-items li::before{content:'·';margin-right:8px;color:var(--primary)}
+
+/* ── Beat Cards for Market ── */
+.beat{flex:1;padding:0}
+.beat-num{
+  font-size:72px;font-weight:500;line-height:1;
+  color:var(--primary);
+}
+.beat h3{font-size:18px;margin:8px 0 6px}
+.beat p{font-size:14px;line-height:1.55}
+
+/* ── Competition Diff Row ── */
+.diff-row{
+  display:flex;gap:24px;align-items:stretch;
+}
+.diff-col{
+  flex:1;padding:20px;border-radius:2px;
+}
+.diff-col.them{background:rgba(0,0,0,0.04);border:0.5px solid var(--border)}
+.diff-col.us{background:rgba(218,61,61,0.06);border:0.5px solid rgba(218,61,61,0.2)}
+.diff-col h4{font-size:14px;font-weight:500;margin-bottom:8px}
+.diff-col p{font-size:13px;line-height:1.5}
+
+/* ── Closing Slide ── */
+.closing-quote{
+  font-family:var(--font-serif);
+  font-size:36px;line-height:1.6;
+  font-weight:400;
+}
+.closing-sub{
+  font-size:18px;font-weight:400;
+  margin-top:24px;
+  opacity:0.6;
+}
+.closing-logo{
+  font-size:16px;letter-spacing:3px;
+  opacity:0.3;margin-top:40px;
+}
+
+/* ── Auth Gate ── */
+.auth-gate{
+  position:fixed;inset:0;z-index:9999;
+  background:#1a1a1a;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:24px;
+  transition:opacity 0.4s ease;
+}
+.auth-gate.hidden{opacity:0;pointer-events:none}
+.auth-gate .logo{font-size:28px;color:rgba(255,255,255,0.25);letter-spacing:2px;margin-bottom:8px}
+.auth-gate p{font-size:14px;color:rgba(255,255,255,0.4)}
+.auth-input{
+  width:280px;padding:12px 16px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:2px;
+  color:#fff;font-size:15px;font-family:var(--font-main);
+  outline:none;text-align:center;letter-spacing:1px;
+}
+.auth-input:focus{border-color:var(--primary)}
+.auth-input.shake{animation:shake 0.4s ease}
+.auth-btn{
+  width:44px;height:44px;border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.08);border-radius:2px;
+  color:rgba(255,255,255,0.6);font-size:18px;cursor:pointer;
+  flex-shrink:0;transition:border-color 0.2s,color 0.2s;
+}
+.auth-btn:hover,.auth-btn:active{border-color:var(--primary);color:#fff}
+.auth-error{font-size:13px;color:var(--primary);height:18px}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%,60%{transform:translateX(-8px)}
+  40%,80%{transform:translateX(8px)}
+}
+
+/* ── Progress Bar ── */
+.deck-progress{
+  position:fixed;top:0;left:0;height:2px;z-index:200;
+  background:linear-gradient(90deg,var(--primary),#e8a04c);
+  transition:width 0.5s cubic-bezier(0.25,1,0.5,1);
+  will-change:width;
+}
+
+/* ── Staggered Content Reveal ── */
+.slide .reveal-item{
+  opacity:0;transform:translateY(14px);
+  transition:opacity 0.5s ease,transform 0.5s cubic-bezier(0.25,1,0.5,1);
+}
+.slide.active .reveal-item{
+  opacity:1;transform:translateY(0);
+}
+.slide.active .reveal-item:nth-child(1){transition-delay:0.1s}
+.slide.active .reveal-item:nth-child(2){transition-delay:0.22s}
+.slide.active .reveal-item:nth-child(3){transition-delay:0.34s}
+.slide.active .reveal-item:nth-child(4){transition-delay:0.46s}
+.slide.active .reveal-item:nth-child(5){transition-delay:0.56s}
+
+/* ── Cover Entrance ── */
+.cover-tagline{
+  opacity:0;transform:translateY(20px);
+  transition:opacity 0.8s ease 0.2s,transform 0.8s cubic-bezier(0.25,1,0.5,1) 0.2s;
+}
+.slide.active .cover-tagline{opacity:1;transform:translateY(0)}
+
+.cover-sub{
+  opacity:0;transform:translateY(12px);
+  transition:opacity 0.7s ease 0.5s,transform 0.7s cubic-bezier(0.25,1,0.5,1) 0.5s;
+}
+.slide.active .cover-sub{opacity:1;transform:translateY(0)}
+
+/* ── Auth Reveal ── */
+.auth-gate.hidden{
+  opacity:0;transform:scale(1.02);
+  pointer-events:none;
+  transition:opacity 0.5s ease,transform 0.5s cubic-bezier(0.25,1,0.5,1);
+}
+
+/* ── Auth Logo Pulse ── */
+.auth-gate .logo{animation:authPulse 3s ease-in-out infinite}
+@keyframes authPulse{
+  0%,100%{opacity:0.25}
+  50%{opacity:0.45}
+}
+
+/* ── Stat Number Glow ── */
+.beat-num{
+  transition:opacity 0.6s ease;
+}
+.slide:not(.active) .beat-num{opacity:0}
+
+/* ── Nav Dot Hover ── */
+.slide-nav button{
+  transition:all 0.2s cubic-bezier(0.25,1,0.5,1);
+}
+.slide-nav button:hover{
+  background:rgba(255,255,255,0.45);
+  transform:scale(1.3);
+}
+.slide-nav button.active:hover{transform:scale(1)}
+
+/* ── Card Hover ── */
+.card,.cap-card,.card-dark{
+  transition:transform 0.25s cubic-bezier(0.25,1,0.5,1),box-shadow 0.25s ease;
+}
+.card:hover,.cap-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 4px 16px rgba(0,0,0,0.06);
+}
+.card-dark:hover{
+  transform:translateY(-2px);
+  box-shadow:0 4px 16px rgba(255,255,255,0.04);
+}
+
+/* ── Gold Line Shimmer ── */
+.gold-line{
+  background-size:200% 100%;
+  background-image:linear-gradient(90deg,var(--primary),#e8a04c,var(--primary),#e8a04c);
+  animation:shimmer 3s ease-in-out infinite;
+}
+@keyframes shimmer{
+  0%{background-position:0% 50%}
+  100%{background-position:200% 50%}
+}
+
+/* ── Mobile: Rotate Hint ── */
+.rotate-hint{
+  display:none;position:fixed;inset:0;z-index:10000;
+  background:#1a1a1a;
+  flex-direction:column;align-items:center;justify-content:center;gap:16px;
+}
+.rotate-hint svg{width:48px;height:48px;opacity:0.4;animation:rotateHint 2s ease-in-out infinite}
+.rotate-hint p{font-size:14px;color:rgba(255,255,255,0.45);text-align:center;line-height:1.6}
+.rotate-hint .skip-btn{
+  margin-top:8px;padding:8px 20px;
+  background:transparent;border:1px solid rgba(255,255,255,0.2);
+  border-radius:2px;color:rgba(255,255,255,0.5);font-size:13px;cursor:pointer;
+}
+.rotate-hint .skip-btn:active{border-color:var(--primary);color:#fff}
+@keyframes rotateHint{
+  0%,100%{transform:rotate(0deg)}
+  25%{transform:rotate(-90deg)}
+  75%{transform:rotate(-90deg)}
+}
+@media (max-width:1024px) and (orientation:portrait){
+  .rotate-hint:not(.dismissed){display:flex}
+}
+
+/* ── Bilingual Toggle ── */
+span.en{display:none}
+body.lang-en span.zh{display:none}
+body.lang-en span.en{display:inline}
+
+/* ── Toolbar (counter + lang + pdf) ── */
+.deck-toolbar{
+  position:fixed;bottom:22px;right:40px;
+  display:flex;align-items:center;gap:12px;z-index:100;
+}
+.deck-toolbar .slide-counter{position:static}
+.lang-btn,.pdf-btn{
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:2px;padding:3px 8px;
+  font-size:12px;color:rgba(255,255,255,0.4);
+  cursor:pointer;font-family:var(--font-main);
+  transition:color 0.2s,border-color 0.2s;
+  white-space:nowrap;
+}
+.lang-btn:hover,.pdf-btn:hover{
+  color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.3);
+}
+.lang-btn .active-lang{color:#fff;font-weight:500}
+.pdf-btn.loading{opacity:0.5;pointer-events:none}
+</style>
+</head>
+<body>
+
+<!-- Rotate Hint (mobile portrait) -->
+<div class="rotate-hint" id="rotateHint">
+  <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5">
+    <rect x="4" y="2" width="16" height="20" rx="2"/>
+    <path d="M15 17h2M12 17h.01"/>
+  </svg>
+  <p>Rotate for best experience</p>
+  <button class="skip-btn" onclick="document.getElementById('rotateHint').classList.add('dismissed')"><span class="zh">Continue</span><span class="en">Continue in portrait</span></button>
+</div>
+
+<!-- Auth Gate -->
+<div class="auth-gate" id="authGate">
+  <div class="logo">{{BRAND_LOGO_TEXT}}</div>
+  <p>Confidential &middot; Enter password to continue</p>
+  <div style="display:flex;gap:8px;align-items:center">
+    <input class="auth-input" id="authInput" type="password" placeholder="Password" autofocus>
+    <button class="auth-btn" id="authBtn" aria-label="Submit">&rarr;</button>
+  </div>
+  <div class="auth-error" id="authError"></div>
+</div>
+
+<!-- Progress Bar -->
+<div class="deck-progress" id="progress" style="display:none"></div>
+
+<!-- Deck Container -->
+<div class="deck" id="deck" style="display:none">
+
+<!-- %%SLIDES%% -->
+
+</div><!-- /deck -->
+
+<!-- Navigation -->
+<div class="slide-nav" id="nav" style="display:none"></div>
+<div class="deck-toolbar" id="toolbar" style="display:none">
+  <div class="slide-counter" id="counter"></div>
+  <button class="lang-btn" id="langBtn" onclick="toggleLang()"><span class="active-lang">ZH</span> | EN</button>
+  <button class="pdf-btn" id="pdfBtn" onclick="exportPDF()">&#11015; PDF</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// ── Config Constants (replaced at generation time) ──
+const DECK_PASSWORD = '{{PASSWORD}}';
+const WATERMARK_TEXT = '{{WATERMARK}}';
+const DECK_TITLE = '{{DECK_TITLE}}';
+
+// ── Responsive Scale ──
+function scaleDeck() {
+  const d = document.getElementById('deck');
+  if (!d || d.style.display === 'none') return;
+  const sw = 1280, sh = 720;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const isLandscapeMobile = vw > vh && vw < 1200;
+  const scale = isLandscapeMobile ? (vw / sw) : Math.min(vw / sw, vh / sh);
+  d.style.transform = scale < 0.99 ? `scale(${scale})` : '';
+  d.style.overflow = isLandscapeMobile ? 'hidden' : '';
+}
+window.addEventListener('resize', scaleDeck);
+window.addEventListener('orientationchange', () => setTimeout(scaleDeck, 100));
+
+// ── Auth Gate ──
+const authGate = document.getElementById('authGate');
+const authInput = document.getElementById('authInput');
+const authError = document.getElementById('authError');
+const deck = document.getElementById('deck');
+
+function checkAuth(pw) {
+  return pw === DECK_PASSWORD;
+}
+
+function showDeck() {
+  deck.style.display = '';
+  document.getElementById('nav').style.display = '';
+  document.getElementById('toolbar').style.display = '';
+  document.getElementById('progress').style.display = '';
+  scaleDeck();
+}
+
+if (sessionStorage.getItem('deck-auth') === '1') {
+  authGate.style.display = 'none';
+  showDeck();
+}
+
+function tryAuth() {
+  if (checkAuth(authInput.value)) {
+    sessionStorage.setItem('deck-auth', '1');
+    authGate.classList.add('hidden');
+    showDeck();
+    setTimeout(() => { authGate.style.display = 'none'; }, 400);
+  } else {
+    authError.textContent = 'Incorrect password';
+    authInput.classList.add('shake');
+    authInput.value = '';
+    setTimeout(() => { authInput.classList.remove('shake'); }, 400);
+  }
+}
+authInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryAuth(); });
+document.getElementById('authBtn').addEventListener('click', tryAuth);
+
+// ── Deck Navigation ──
+const slides = document.querySelectorAll('.slide');
+const nav = document.getElementById('nav');
+const counter = document.getElementById('counter');
+let current = 0;
+
+// Build nav dots
+slides.forEach((_, i) => {
+  const btn = document.createElement('button');
+  btn.addEventListener('click', () => goTo(i));
+  nav.appendChild(btn);
+});
+
+function goTo(n) {
+  if (n < 0 || n >= slides.length) return;
+  slides[current].classList.remove('active');
+  current = n;
+  slides[current].classList.add('active');
+  updateNav();
+}
+
+const progress = document.getElementById('progress');
+
+function updateNav() {
+  nav.querySelectorAll('button').forEach((btn, i) => {
+    btn.classList.toggle('active', i === current);
+  });
+  counter.textContent = `${current + 1} / ${slides.length}`;
+  // Progress bar
+  const pct = ((current) / (slides.length - 1)) * 100;
+  progress.style.width = pct + '%';
+  // Animate numbers on current slide
+  animateNumbers(slides[current]);
+}
+
+// ── Count-up Animation (bilingual-aware) ──
+function animateNumbers(slide) {
+  const isEn = document.body.classList.contains('lang-en');
+  const animKey = isEn ? 'animatedEn' : 'animatedZh';
+  slide.querySelectorAll('.beat-num').forEach(el => {
+    if (el.dataset[animKey]) return;
+    el.dataset[animKey] = '1';
+    // Find the visible language span, or fallback to el itself
+    const langSpan = el.querySelector(isEn ? '.en' : '.zh');
+    const src = langSpan || el;
+    const raw = src.childNodes[0].textContent.trim();
+    const suffix = src.querySelector('span');
+    const suffixHTML = suffix ? suffix.outerHTML : '';
+    const clean = raw.replace(/[$,]/g, '');
+    const target = parseFloat(clean);
+    if (isNaN(target)) return;
+    const hasPrefix = raw.startsWith('$') ? '$' : '';
+    const hasComma = raw.includes(',');
+    const decimals = clean.includes('.') ? clean.split('.')[1].length : 0;
+    const duration = 800;
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const val = target * ease;
+      let formatted = decimals > 0 ? val.toFixed(decimals) : Math.round(val).toString();
+      if (hasComma) formatted = Number(formatted).toLocaleString('en-US', {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+      src.innerHTML = hasPrefix + formatted + suffixHTML;
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+// ── Language Toggle ──
+function toggleLang() {
+  const isEn = document.body.classList.toggle('lang-en');
+  const btn = document.getElementById('langBtn');
+  btn.innerHTML = isEn
+    ? 'ZH | <span class="active-lang">EN</span>'
+    : '<span class="active-lang">ZH</span> | EN';
+  animateNumbers(slides[current]);
+}
+
+// ── PDF Export ──
+async function exportPDF() {
+  const btn = document.getElementById('pdfBtn');
+  // Check libraries loaded
+  if (typeof html2canvas === 'undefined' || !window.jspdf) {
+    alert('PDF libraries still loading. Please wait a moment and try again.');
+    return;
+  }
+  btn.classList.add('loading');
+  btn.innerHTML = '\u23F3 1/' + slides.length;
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1280, 720] });
+    const deckEl = document.getElementById('deck');
+    const savedCurrent = current;
+    const savedTransform = deckEl.style.transform;
+    deckEl.style.transform = 'none';
+
+    for (let i = 0; i < slides.length; i++) {
+      btn.innerHTML = '\u23F3 ' + (i + 1) + '/' + slides.length;
+      slides.forEach((s, j) => {
+        s.style.transition = 'none';
+        if (j === i) {
+          s.classList.add('active');
+          s.style.position = 'relative';
+          s.style.width = '1280px';
+          s.style.height = '720px';
+          s.style.opacity = '1';
+          s.style.visibility = 'visible';
+        } else {
+          s.classList.remove('active');
+          s.style.position = 'absolute';
+          s.style.opacity = '0';
+          s.style.visibility = 'hidden';
+        }
+      });
+      await new Promise(r => setTimeout(r, 100));
+      const canvas = await html2canvas(slides[i], {
+        width: 1280, height: 720, scale: 2,
+        useCORS: true, allowTaint: true, logging: false,
+        backgroundColor: null
+      });
+      // Watermark tiling (canvas is 2x scale, so double sizes)
+      const ctx = canvas.getContext('2d');
+      ctx.save();
+      ctx.font = '80px sans-serif';
+      ctx.fillStyle = 'rgba(0,0,0,0.04)';
+      for (let y = -canvas.height; y < canvas.height * 2; y += 360) {
+        for (let x = -canvas.width; x < canvas.width * 2; x += 800) {
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(-35 * Math.PI / 180);
+          ctx.fillText(WATERMARK_TEXT, 0, 0);
+          ctx.restore();
+        }
+      }
+      ctx.restore();
+      if (i > 0) pdf.addPage([1280, 720], 'landscape');
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 1280, 720);
+    }
+    // Restore all slides
+    deckEl.style.transform = savedTransform;
+    slides.forEach(s => {
+      s.style.transition = '';
+      s.style.position = '';
+      s.style.width = '';
+      s.style.height = '';
+      s.style.opacity = '';
+      s.style.visibility = '';
+    });
+    goTo(savedCurrent);
+    const lang = document.body.classList.contains('lang-en') ? 'EN' : 'ZH';
+    pdf.save(DECK_TITLE.replace(/\s+/g, '-') + '-' + lang + '.pdf');
+  } catch (e) {
+    console.error('PDF export failed:', e);
+    alert('PDF export failed: ' + e.message);
+  }
+  btn.classList.remove('loading');
+  btn.innerHTML = '\u2B07 PDF';
+}
+
+// ── Keyboard Navigation ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault(); goTo(current + 1);
+  }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault(); goTo(current - 1);
+  }
+  if (e.key === 'Home') goTo(0);
+  if (e.key === 'End') goTo(slides.length - 1);
+});
+
+// ── Touch Support (swipe) ──
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) goTo(current + (dx < 0 ? 1 : -1));
+});
+
+// ── Initialize ──
+updateNav();
+</script>
+</body>
+</html>
