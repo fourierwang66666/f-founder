@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Harvey — Series A Pitch Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#B8956A;
+  --primary-dark:#8B6B3F;
+  --bg:#FAFAF9;
+  --bg-warm:#F5F4F2;
+  --text:rgba(15,14,13,0.85);
+  --text-mid:rgba(15,14,13,0.6);
+  --text-light:rgba(15,14,13,0.38);
+  --border:rgba(15,14,13,0.08);
+  --border-mid:rgba(15,14,13,0.2);
+  --shadow:2px 2px 0 0 rgba(15,14,13,0.12);
+  --font-main:'Inter','Noto Serif SC',system-ui,sans-serif;
+  --font-serif:'Cormorant Garamond','Noto Serif SC',Georgia,serif;
+  --slide-w:1280px;
+  --slide-h:720px;
+}
+body{font-family:var(--font-main);background:#0F0E0D;color:var(--text);overflow:hidden;display:flex;align-items:center;justify-content:center;height:100vh;height:100dvh;width:100vw}
+h1,h2,h3{font-family:var(--font-serif)}
+.deck{position:relative;width:var(--slide-w);height:var(--slide-h);transform-origin:center center}
+.slide{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;padding:60px 80px;opacity:0;pointer-events:none;visibility:hidden;transition:opacity 0.4s ease,visibility 0s 0.4s;overflow:hidden}
+.slide.active{opacity:1;pointer-events:auto;visibility:visible;transition:opacity 0.4s ease,visibility 0s 0s}
+.slide.dark{background:#0F0E0D;color:rgba(250,250,249,0.9)}
+.slide.dark h1,.slide.dark h2,.slide.dark h3{color:#FAFAF9}
+.slide.dark p{color:rgba(250,250,249,0.55)}
+.slide.dark .eyebrow{color:rgba(250,250,249,0.35)}
+h1{font-size:44px;font-weight:500;line-height:1.25;letter-spacing:-0.5px}
+h2{font-size:32px;font-weight:500;line-height:1.3;letter-spacing:-0.3px;margin-bottom:8px}
+h3{font-size:20px;font-weight:500;line-height:1.4;margin-bottom:6px}
+p{font-size:16px;line-height:1.65;color:var(--text-mid)}
+.eyebrow{font-family:var(--font-main);font-size:12px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-light);margin-bottom:16px}
+.stat-big{font-size:56px;font-weight:500;line-height:1.1}
+.stat-label{font-size:14px;color:var(--text-light);margin-top:4px}
+.quote{font-family:var(--font-serif);font-style:italic;font-size:20px;line-height:1.6;color:var(--text)}
+.slide.dark .quote{color:rgba(250,250,249,0.7)}
+.logo{font-family:var(--font-serif);font-size:22px;font-weight:500;color:var(--text-light);letter-spacing:1px}
+.slide.dark .logo{color:rgba(250,250,249,0.3)}
+.cover-tagline{font-family:var(--font-serif);font-size:60px;font-weight:500;line-height:1.15;letter-spacing:-1px}
+.cover-sub{font-size:18px;font-weight:300;margin-top:16px;letter-spacing:0.3px}
+.flex{display:flex;gap:32px}
+.flex-3{display:flex;gap:24px}
+.flex-4{display:flex;gap:20px}
+.col{flex:1}
+.center{text-align:center;align-items:center;justify-content:center}
+.grow{flex:1}
+.mt-auto{margin-top:auto}
+.mt-8{margin-top:8px}.mt-16{margin-top:16px}.mt-24{margin-top:24px}.mt-32{margin-top:32px}.mt-40{margin-top:40px}
+.mb-8{margin-bottom:8px}.mb-16{margin-bottom:16px}
+.card{background:var(--bg-warm);border:0.5px solid var(--border);border-radius:2px;padding:24px;flex:1}
+.card-dark{background:rgba(250,250,249,0.04);border:0.5px solid rgba(250,250,249,0.08);border-radius:2px;padding:24px;flex:1}
+.gold-line{width:48px;height:2px;background-size:200% 100%;background-image:linear-gradient(90deg,var(--primary),#D4B896,var(--primary),#D4B896);animation:shimmer 3s ease-in-out infinite;margin:20px 0}
+@keyframes shimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+.num{width:32px;height:32px;border-radius:50%;background:var(--primary);color:#FAFAF9;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;flex-shrink:0}
+.cap-card{flex:1;padding:24px;background:var(--bg-warm);border:0.5px solid var(--border);border-radius:2px}
+.cap-card h3{font-size:16px;margin-bottom:8px}
+.cap-card p{font-size:13px;line-height:1.55}
+.beat{flex:1;padding:0}
+.beat-num{font-family:var(--font-main);font-size:64px;font-weight:600;line-height:1;color:var(--primary);transition:opacity 0.6s ease}
+.slide:not(.active) .beat-num{opacity:0}
+.beat h3{font-size:16px;margin:8px 0 4px}
+.beat p{font-size:13px;line-height:1.55}
+.quadrant{position:relative;width:460px;height:340px;margin:0 auto}
+.q-axis-x,.q-axis-y{position:absolute;background:rgba(0,0,0,0.1)}
+.q-axis-x{left:0;right:0;top:50%;height:1px}
+.q-axis-y{top:0;bottom:0;left:50%;width:1px}
+.q-label{position:absolute;font-size:11px;color:var(--text-light);letter-spacing:0.5px}
+.q-dot{position:absolute;padding:6px 12px;border-radius:2px;font-size:12px;font-weight:500;white-space:nowrap;transform:translate(-50%,-50%)}
+.q-dot.highlight{background:#0F0E0D;color:#FAFAF9;box-shadow:var(--shadow)}
+.q-dot.other{background:rgba(0,0,0,0.05);color:var(--text-mid)}
+.arch-box{border:1px solid var(--border-mid);border-radius:2px;padding:14px 16px;text-align:center;font-size:13px;font-weight:500;flex:1}
+.arch-box.primary{border-color:var(--primary);background:rgba(184,149,106,0.08)}
+.arch-arrow{display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--text-light);padding:0 6px}
+.pain-row{display:flex;align-items:flex-start;gap:16px;padding:14px 0;border-bottom:0.5px solid rgba(250,250,249,0.08)}
+.pain-row:last-child{border-bottom:none}
+.pain-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center;opacity:0.6}
+.pain-title{font-size:15px;font-weight:500}
+.pain-desc{font-size:13px;color:rgba(250,250,249,0.5);margin-top:4px;line-height:1.5}
+.closing-quote{font-family:var(--font-serif);font-size:32px;line-height:1.55;font-weight:400}
+.metric{text-align:center;flex:1}
+.metric-num{font-family:var(--font-main);font-size:36px;font-weight:600;color:var(--primary)}
+.metric-label{font-size:13px;color:var(--text-mid);margin-top:4px}
+.cert-badge{display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(250,250,249,0.04);border:0.5px solid rgba(250,250,249,0.08);border-radius:2px;flex:1}
+.cert-badge .cert-name{font-size:14px;font-weight:500;color:#FAFAF9}
+.cert-badge .cert-desc{font-size:11px;color:rgba(250,250,249,0.4);margin-top:2px}
+.investor-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.investor-pill{padding:6px 14px;background:rgba(250,250,249,0.05);border:0.5px solid rgba(250,250,249,0.1);border-radius:2px;font-size:13px;color:rgba(250,250,249,0.6)}
+.flywheel-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:520px;margin:20px auto 0}
+.flywheel-node{padding:18px;background:rgba(250,250,249,0.04);border:0.5px solid rgba(250,250,249,0.1);border-radius:2px;position:relative}
+.flywheel-node h3{font-size:14px;color:#FAFAF9;margin-bottom:4px}
+.flywheel-node p{font-size:12px;color:rgba(250,250,249,0.45);line-height:1.45}
+.flywheel-arrow{position:absolute;color:var(--primary);font-size:16px;font-weight:700}
+.slide .reveal-item{opacity:0;transform:translateY(14px);transition:opacity 0.5s ease,transform 0.5s cubic-bezier(0.25,1,0.5,1)}
+.slide.active .reveal-item{opacity:1;transform:translateY(0)}
+.slide.active .reveal-item:nth-child(1){transition-delay:0.1s}
+.slide.active .reveal-item:nth-child(2){transition-delay:0.22s}
+.slide.active .reveal-item:nth-child(3){transition-delay:0.34s}
+.slide.active .reveal-item:nth-child(4){transition-delay:0.46s}
+.slide.active .reveal-item:nth-child(5){transition-delay:0.56s}
+.slide.active .reveal-item:nth-child(6){transition-delay:0.66s}
+.slide.active .reveal-item:nth-child(7){transition-delay:0.76s}
+.cover-tagline{opacity:0;transform:translateY(20px);transition:opacity 0.8s ease 0.2s,transform 0.8s cubic-bezier(0.25,1,0.5,1) 0.2s}
+.slide.active .cover-tagline{opacity:1;transform:translateY(0)}
+.cover-sub{opacity:0;transform:translateY(12px);transition:opacity 0.7s ease 0.5s,transform 0.7s cubic-bezier(0.25,1,0.5,1) 0.5s}
+.slide.active .cover-sub{opacity:1;transform:translateY(0)}
+.card,.cap-card,.card-dark{transition:transform 0.25s cubic-bezier(0.25,1,0.5,1),box-shadow 0.25s ease}
+.card:hover,.cap-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.06)}
+.card-dark:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(250,250,249,0.03)}
+.slide-nav{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:100}
+.slide-nav button{width:8px;height:8px;border-radius:50%;border:none;background:rgba(250,250,249,0.2);cursor:pointer;transition:all 0.2s cubic-bezier(0.25,1,0.5,1)}
+.slide-nav button.active{background:var(--primary);width:24px;border-radius:4px}
+.slide-nav button:hover{background:rgba(250,250,249,0.4);transform:scale(1.3)}
+.slide-nav button.active:hover{transform:scale(1)}
+.deck-progress{position:fixed;top:0;left:0;height:2px;z-index:200;background:linear-gradient(90deg,var(--primary),#D4B896);transition:width 0.5s cubic-bezier(0.25,1,0.5,1);will-change:width}
+.auth-gate{position:fixed;inset:0;z-index:9999;background:#0F0E0D;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;transition:opacity 0.5s ease,transform 0.5s cubic-bezier(0.25,1,0.5,1)}
+.auth-gate.hidden{opacity:0;transform:scale(1.02);pointer-events:none}
+.auth-gate .logo{font-family:var(--font-serif);font-size:32px;color:rgba(250,250,249,0.2);letter-spacing:3px;margin-bottom:8px;animation:authPulse 3s ease-in-out infinite}
+.auth-gate p{font-size:14px;color:rgba(250,250,249,0.35)}
+.auth-input{width:280px;padding:12px 16px;background:rgba(250,250,249,0.06);border:1px solid rgba(250,250,249,0.12);border-radius:2px;color:#FAFAF9;font-size:15px;font-family:var(--font-main);outline:none;text-align:center;letter-spacing:1px}
+.auth-input:focus{border-color:var(--primary)}
+.auth-input.shake{animation:shake 0.4s ease}
+.auth-btn{width:44px;height:44px;border:1px solid rgba(250,250,249,0.12);background:rgba(250,250,249,0.06);border-radius:2px;color:rgba(250,250,249,0.5);font-size:18px;cursor:pointer;flex-shrink:0;transition:border-color 0.2s,color 0.2s}
+.auth-btn:hover{border-color:var(--primary);color:#FAFAF9}
+.auth-error{font-size:13px;color:var(--primary);height:18px}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes authPulse{0%,100%{opacity:0.2}50%{opacity:0.4}}
+span.en{display:none}
+body.lang-en span.zh{display:none}
+body.lang-en span.en{display:inline}
+.deck-toolbar{position:fixed;bottom:22px;right:40px;display:flex;align-items:center;gap:12px;z-index:100}
+.deck-toolbar .slide-counter{position:static}
+.lang-btn,.pdf-btn{background:rgba(250,250,249,0.08);border:1px solid rgba(250,250,249,0.12);border-radius:2px;padding:3px 8px;font-size:12px;color:rgba(250,250,249,0.35);cursor:pointer;font-family:var(--font-main);transition:color 0.2s,border-color 0.2s;white-space:nowrap}
+.lang-btn:hover,.pdf-btn:hover{color:rgba(250,250,249,0.6);border-color:rgba(250,250,249,0.25)}
+.lang-btn .active-lang{color:#FAFAF9;font-weight:500}
+.pdf-btn.loading{opacity:0.5;pointer-events:none}
+.rotate-hint{display:none;position:fixed;inset:0;z-index:10000;background:#0F0E0D;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.rotate-hint p{font-size:14px;color:rgba(250,250,249,0.4)}
+.rotate-hint .skip-btn{padding:8px 20px;background:transparent;border:1px solid rgba(250,250,249,0.15);border-radius:2px;color:rgba(250,250,249,0.4);font-size:13px;cursor:pointer}
+@media(max-width:1024px) and (orientation:portrait){.rotate-hint:not(.dismissed){display:flex}}
+@media print{body{background:#fff}.auth-gate,.slide-nav,.deck-toolbar,.deck-progress,.rotate-hint{display:none!important}.deck{transform:none!important}.slide{position:relative!important;opacity:1!important;visibility:visible!important;page-break-after:always;width:1280px;height:720px}.slide .reveal-item{opacity:1!important;transform:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="rotate-hint" id="rotateHint">
+  <p>Rotate for best experience</p>
+  <button class="skip-btn" onclick="document.getElementById('rotateHint').classList.add('dismissed')">Continue</button>
+</div>
+
+<div class="auth-gate" id="authGate">
+  <div class="logo">Harvey</div>
+  <p>Confidential &middot; Enter password to continue</p>
+  <div style="display:flex;gap:8px;align-items:center">
+    <input class="auth-input" id="authInput" type="password" placeholder="Password" autofocus>
+    <button class="auth-btn" id="authBtn" aria-label="Submit">&rarr;</button>
+  </div>
+  <div class="auth-error" id="authError"></div>
+</div>
+
+<div class="deck-progress" id="progress" style="display:none"></div>
+
+<div class="deck" id="deck" style="display:none">
+
+<!-- SLIDE 1: COVER -->
+<div class="slide dark active" data-slide="0">
+  <div class="logo" style="font-size:18px;letter-spacing:3px;color:rgba(250,250,249,0.2)">Harvey</div>
+  <div class="grow" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center">
+    <div class="cover-tagline" style="color:#FAFAF9">
+      <span class="zh">让法律实践臻于完美</span><span class="en">Practice Made Perfect</span>
+    </div>
+    <p class="cover-sub" style="color:rgba(250,250,249,0.45);max-width:600px">
+      <span class="zh">专为法律和专业服务打造的 AI 平台</span><span class="en">AI Designed for Legal and Professional Services</span>
+    </p>
+    <div class="gold-line" style="margin:32px auto 0"></div>
+  </div>
+  <p style="font-size:12px;color:rgba(250,250,249,0.2);margin-top:auto;text-align:center;letter-spacing:1px">
+    <span class="zh">机密文件 · 2026 年 3 月</span><span class="en">Confidential · March 2026</span>
+  </p>
+</div>
+
+<!-- SLIDE 2: MARKET -->
+<div class="slide" data-slide="1">
+  <div class="eyebrow"><span class="zh">市场机遇</span><span class="en">MARKET OPPORTUNITY</span></div>
+  <h2><span class="zh">万亿美元的法律市场正迎来 AI 革命</span><span class="en">A Trillion-Dollar Market Ready for AI Transformation</span></h2>
+  <div class="flex-3 mt-32 grow">
+    <div class="beat reveal-item" style="text-align:center">
+      <div class="beat-num"><span class="zh">$1<span style="font-size:28px">T</span></span><span class="en">$1<span style="font-size:28px">T</span></span></div>
+      <h3 style="font-size:15px;margin-top:12px"><span class="zh">全球法律服务市场</span><span class="en">Global Legal Services</span></h3>
+    </div>
+    <div class="beat reveal-item" style="text-align:center">
+      <div class="beat-num"><span class="zh">$47<span style="font-size:28px">B</span></span><span class="en">$47<span style="font-size:28px">B</span></span></div>
+      <h3 style="font-size:15px;margin-top:12px"><span class="zh">法律科技市场 2030</span><span class="en">Legal Tech Market 2030</span></h3>
+      <p style="font-size:12px"><span class="zh">从 $33B 增长 · CAGR 10.2%</span><span class="en">From $33B · 10.2% CAGR</span></p>
+    </div>
+    <div class="beat reveal-item" style="text-align:center">
+      <div class="beat-num"><span class="zh">75<span style="font-size:28px">%</span></span><span class="en">75<span style="font-size:28px">%</span></span></div>
+      <h3 style="font-size:15px;margin-top:12px"><span class="zh">律所计划 3 年内采用 AI</span><span class="en">Firms Planning AI in 3 Years</span></h3>
+    </div>
+  </div>
+  <div class="reveal-item" style="margin-top:auto">
+    <p style="font-size:13px;color:var(--text-light)"><span class="zh">司法积压、客户对 AI 的需求压力、人才流失——法律行业正处于技术变革的拐点</span><span class="en">Judicial backlogs, client pressure for AI, staff attrition — the legal industry is at an inflection point</span></p>
+    <p style="font-size:11px;color:var(--text-light);margin-top:6px">Source: Grand View Research 2025, Thomson Reuters Legal AI Report</p>
+  </div>
+</div>
+
+<!-- SLIDE 3: PROBLEM -->
+<div class="slide dark" data-slide="2">
+  <div class="eyebrow"><span class="zh">问题</span><span class="en">THE PROBLEM</span></div>
+  <h2><span class="zh">法律工作仍停留在手工时代</span><span class="en">Legal Work Is Still Done by Hand</span></h2>
+  <div class="reveal-item" style="margin-top:24px;padding:24px 28px;background:rgba(184,149,106,0.08);border:0.5px solid rgba(184,149,106,0.15);border-radius:2px">
+    <p style="font-size:15px;color:rgba(250,250,249,0.7);line-height:1.7;font-style:italic">
+      <span class="zh">一名初级律师花 40 小时审阅 500 页尽职调查文件。账单费率 $500/小时。这 $20,000 的工作中，80% 是重复性的文本提取和交叉比对。</span>
+      <span class="en">A junior associate spends 40 hours reviewing 500 pages of due diligence documents. At $500/hr, that's $20,000 — and 80% of the work is repetitive text extraction and cross-referencing.</span>
+    </p>
+  </div>
+  <div class="grow" style="margin-top:20px">
+    <div class="pain-row reveal-item">
+      <div class="pain-icon">&#9670;</div>
+      <div>
+        <div class="pain-title" style="color:#FAFAF9"><span class="zh">技术投入极低</span><span class="en">Minimal Tech Investment</span></div>
+        <div class="pain-desc"><span class="zh">法律行业技术支出仅占收入 3-5%，远低于金融（7-10%）和医疗（4-8%）</span><span class="en">Legal tech spend is just 3-5% of revenue — below finance (7-10%) and healthcare (4-8%)</span></div>
+      </div>
+    </div>
+    <div class="pain-row reveal-item">
+      <div class="pain-icon">&#9670;</div>
+      <div>
+        <div class="pain-title" style="color:#FAFAF9"><span class="zh">低效推高成本</span><span class="en">Inefficiency Costs Clients</span></div>
+        <div class="pain-desc"><span class="zh">律所平均账单费率 $500–1,500/小时，低效直接推高客户成本</span><span class="en">$500–1,500/hr billing rates mean inefficiency costs clients directly</span></div>
+      </div>
+    </div>
+    <div class="pain-row reveal-item">
+      <div class="pain-icon">&#9670;</div>
+      <div>
+        <div class="pain-title" style="color:#FAFAF9"><span class="zh">通用 AI 不够格</span><span class="en">General AI Falls Short</span></div>
+        <div class="pain-desc"><span class="zh">通用 AI 工具无法满足法律行业对准确性、引用和合规性的严苛要求</span><span class="en">General AI cannot meet legal-grade accuracy, citation, and compliance requirements</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: ORIGIN STORY -->
+<div class="slide" data-slide="3">
+  <div class="eyebrow"><span class="zh">起源</span><span class="en">ORIGIN</span></div>
+  <h2><span class="zh">从 100 个 Reddit 问题到 $11B</span><span class="en">From 100 Reddit Questions to $11B</span></h2>
+  <div class="gold-line"></div>
+  <div class="grow reveal-item" style="display:flex;align-items:center">
+    <p style="font-size:17px;line-height:1.8;color:var(--text);max-width:880px">
+      <span class="zh">2022 年夏天，前室友 Weinberg（律师）和 Pereyra（AI 研究员）用 GPT-3 回答了 100 个 Reddit 上的租客法律问题，请真实律师评审——<strong style="color:var(--primary)">86/100 被批准</strong>。他们在 7 月 4 日见到了 OpenAI 高层。OpenAI 成为 Harvey 的首个投资者，并给予了最早的 GPT-4 访问权限。三年后，Harvey 的估值达到 <strong style="color:var(--primary)">$11B</strong>。</span>
+      <span class="en">Summer 2022. Former roommates Weinberg (lawyer) and Pereyra (AI researcher) tested GPT-3 on 100 Reddit landlord-tenant questions. Real attorneys reviewed the answers — <strong style="color:var(--primary)">86 out of 100 were approved</strong>. On July 4th, they met OpenAI's C-suite. OpenAI became Harvey's first investor and gave them earliest access to GPT-4. Three years later, Harvey is valued at <strong style="color:var(--primary)">$11 billion</strong>.</span>
+    </p>
+  </div>
+  <div class="flex-4 reveal-item" style="margin-top:auto">
+    <div class="metric"><div class="metric-num">86<span style="font-size:18px">/100</span></div><div class="metric-label"><span class="zh">律师审批通过</span><span class="en">Attorney-Approved</span></div></div>
+    <div class="metric"><div class="metric-num" style="font-size:24px">Jul 4, 2022</div><div class="metric-label"><span class="zh">见到 OpenAI</span><span class="en">Met OpenAI</span></div></div>
+    <div class="metric"><div class="metric-num">1st</div><div class="metric-label"><span class="zh">OpenAI 投资项目</span><span class="en">OpenAI Investment</span></div></div>
+    <div class="metric"><div class="metric-num">$11<span style="font-size:18px">B</span></div><div class="metric-label"><span class="zh">当前估值</span><span class="en">Current Valuation</span></div></div>
+  </div>
+</div>
+
+<!-- SLIDE 5: SOLUTION -->
+<div class="slide" data-slide="4">
+  <div class="eyebrow"><span class="zh">解决方案</span><span class="en">THE SOLUTION</span></div>
+  <h2><span class="zh">40 小时 → 2 小时。这就是 Harvey。</span><span class="en">40 Hours → 2 Hours. That's Harvey.</span></h2>
+  <p class="reveal-item" style="margin-top:4px;max-width:700px"><span class="zh">一个平台，五大能力——从提问到起草，从文档分析到工作流自动化</span><span class="en">One platform, five capabilities — from asking to drafting, from document analysis to workflow automation</span></p>
+  <div class="flex-3 mt-24">
+    <div class="cap-card reveal-item">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div class="num">1</div>
+        <h3 style="margin:0">Assistant + Vault</h3>
+      </div>
+      <p><span class="zh">AI 法律助手 + 大规模文档分析。单项目处理 10,000+ 文件，关键条款提取准确率 97%。</span><span class="en">AI co-counsel + bulk document analysis. 10,000+ files per project, 97% key term extraction accuracy.</span></p>
+    </div>
+    <div class="cap-card reveal-item">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div class="num">2</div>
+        <h3 style="margin:0">Knowledge + Agents</h3>
+      </div>
+      <p><span class="zh">500+ 法律数据源 + LexisNexis 判例法。25,000+ 自定义 Agent 自动完成 M&A、尽调、基金设立。</span><span class="en">500+ legal sources + LexisNexis case law. 25,000+ custom agents automate M&A, DD, fund formation.</span></p>
+    </div>
+    <div class="cap-card reveal-item">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div class="num">3</div>
+        <h3 style="margin:0">Ecosystem</h3>
+      </div>
+      <p><span class="zh">无缝嵌入 Word、Outlook、iManage——律师无需改变工作习惯。</span><span class="en">Seamless in Word, Outlook, iManage — lawyers don't change how they work.</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: HOW IT WORKS -->
+<div class="slide" data-slide="5">
+  <div class="eyebrow"><span class="zh">工作方式</span><span class="en">HOW IT WORKS</span></div>
+  <h2><span class="zh">律师提问。Harvey 交付。每个输出均可追溯。</span><span class="en">Lawyers Ask. Harvey Delivers. Every Output Is Traceable.</span></h2>
+  <div class="reveal-item" style="display:flex;align-items:center;gap:0;margin-top:32px">
+    <div class="arch-box primary"><span class="zh">律师提问<br>或上传文件</span><span class="en">Lawyer Asks or<br>Uploads Docs</span></div>
+    <div class="arch-arrow">&#8594;</div>
+    <div class="arch-box"><span class="zh">Harvey 检索<br>法律文本并分析</span><span class="en">Harvey Retrieves<br>&amp; Analyzes</span></div>
+    <div class="arch-arrow">&#8594;</div>
+    <div class="arch-box"><span class="zh">自动生成<br>带引用的答案</span><span class="en">Auto-Generates<br>Cited Answers</span></div>
+    <div class="arch-arrow">&#8594;</div>
+    <div class="arch-box primary"><span class="zh">律师审核<br>修改、交付</span><span class="en">Lawyer Reviews,<br>Edits, Delivers</span></div>
+  </div>
+  <div class="flex-3 mt-auto">
+    <div class="reveal-item">
+      <h3 style="font-size:14px"><span class="zh">引用验证是核心</span><span class="en">Citation Is Core</span></h3>
+      <p style="font-size:13px"><span class="zh">每个输出追溯到原始法律文本</span><span class="en">Every output traces back to source text</span></p>
+    </div>
+    <div class="reveal-item">
+      <h3 style="font-size:14px"><span class="zh">50+ 语言和法律体系</span><span class="en">50+ Languages &amp; Systems</span></h3>
+      <p style="font-size:13px"><span class="zh">覆盖全球主要司法管辖区</span><span class="en">Covers major jurisdictions worldwide</span></p>
+    </div>
+    <div class="reveal-item">
+      <h3 style="font-size:14px"><span class="zh">多模型架构</span><span class="en">Multi-Model Architecture</span></h3>
+      <p style="font-size:13px"><span class="zh">根据任务自动选择最优 AI 模型</span><span class="en">Auto-selects optimal AI model per task</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: TRACTION -->
+<div class="slide dark" data-slide="6">
+  <div class="eyebrow"><span class="zh">规模化增长</span><span class="en">TRACTION</span></div>
+  <h2><span class="zh">从 0 到 $190M ARR，仅用 3 年</span><span class="en">From Zero to $190M ARR in 3 Years</span></h2>
+  <div class="flex-3" style="margin-top:28px">
+    <div class="beat reveal-item" style="text-align:center">
+      <div class="beat-num"><span class="zh">100,000<span style="font-size:24px">+</span></span><span class="en">100,000<span style="font-size:24px">+</span></span></div>
+      <div class="stat-label" style="color:rgba(250,250,249,0.4)"><span class="zh">律师用户</span><span class="en">Lawyers on Platform</span></div>
+    </div>
+    <div class="beat reveal-item" style="text-align:center">
+      <div class="beat-num"><span class="zh">1,300<span style="font-size:24px">+</span></span><span class="en">1,300<span style="font-size:24px">+</span></span></div>
+      <div class="stat-label" style="color:rgba(250,250,249,0.4)"><span class="zh">企业客户 · 60+ 国家</span><span class="en">Organizations · 60+ Countries</span></div>
+    </div>
+    <div class="beat reveal-item" style="text-align:center">
+      <div class="beat-num"><span class="zh">200<span style="font-size:24px">K+</span></span><span class="en">200<span style="font-size:24px">K+</span></span></div>
+      <div class="stat-label" style="color:rgba(250,250,249,0.4)"><span class="zh">每日 AI 查询</span><span class="en">Daily AI Queries</span></div>
+    </div>
+  </div>
+  <div class="flex-3" style="margin-top:24px">
+    <div class="beat reveal-item" style="text-align:center">
+      <div class="beat-num"><span class="zh">1.3<span style="font-size:24px">M+</span></span><span class="en">1.3<span style="font-size:24px">M+</span></span></div>
+      <div class="stat-label" style="color:rgba(250,250,249,0.4)"><span class="zh">每日文件处理</span><span class="en">Files Processed Daily</span></div>
+    </div>
+    <div class="beat reveal-item" style="text-align:center">
+      <div class="beat-num"><span class="zh">92<span style="font-size:24px">%</span></span><span class="en">92<span style="font-size:24px">%</span></span></div>
+      <div class="stat-label" style="color:rgba(250,250,249,0.4)"><span class="zh">月活跃使用率</span><span class="en">Monthly Active Usage</span></div>
+    </div>
+    <div class="beat reveal-item" style="text-align:center">
+      <div class="beat-num"><span class="zh">25<span style="font-size:24px">+</span></span><span class="en">25<span style="font-size:24px">+</span></span></div>
+      <div class="stat-label" style="color:rgba(250,250,249,0.4)"><span class="zh">每用户月节省小时</span><span class="en">Hours Saved / User / Mo</span></div>
+    </div>
+  </div>
+  <div class="reveal-item" style="margin-top:auto;text-align:center;padding:12px 20px;background:rgba(184,149,106,0.1);border-radius:2px">
+    <p style="font-size:14px;color:rgba(250,250,249,0.6)"><span class="zh">$10M (2023) → $50M (2024) → $190M (2026) — <strong style="color:var(--primary)">两年 19x 增长</strong></span><span class="en">$10M (2023) → $50M (2024) → $190M (2026) — <strong style="color:var(--primary)">19x growth in 2 years</strong></span></p>
+  </div>
+</div>
+
+<!-- SLIDE 8: UNIT ECONOMICS -->
+<div class="slide" data-slide="7">
+  <div class="eyebrow"><span class="zh">商业模式</span><span class="en">UNIT ECONOMICS</span></div>
+  <h2><span class="zh">高粘性 SaaS，强劲扩展收入</span><span class="en">High-Stickiness SaaS with Strong Expansion Revenue</span></h2>
+  <div class="reveal-item" style="margin-top:8px">
+    <p style="font-size:14px"><span class="zh">订阅制 + 按席位收费：~$1,000–1,200/用户/月，20 席位起，12 个月合约</span><span class="en">Subscription + per-seat: ~$1,000–1,200/user/month, 20-seat minimum, 12-month contracts</span></p>
+  </div>
+  <div class="flex-3 mt-32">
+    <div class="card reveal-item" style="text-align:center;display:flex;flex-direction:column;justify-content:center;padding:40px 24px">
+      <div class="metric-num" style="font-size:48px">2<span style="font-size:24px">x</span></div>
+      <p style="font-size:14px;margin-top:8px"><span class="zh">席位中位数 12 个月内翻倍</span><span class="en">Median seats double in 12 months</span></p>
+    </div>
+    <div class="card reveal-item" style="text-align:center;display:flex;flex-direction:column;justify-content:center;padding:40px 24px">
+      <div class="metric-num" style="font-size:48px">92<span style="font-size:24px">%</span></div>
+      <p style="font-size:14px;margin-top:8px"><span class="zh">月活——买了就用，用了就离不开</span><span class="en">Monthly usage — buy it, use it, can't leave</span></p>
+    </div>
+    <div class="card reveal-item" style="text-align:center;display:flex;flex-direction:column;justify-content:center;padding:40px 24px">
+      <div class="metric-num" style="font-size:48px">$5<span style="font-size:24px">M+</span></div>
+      <p style="font-size:14px;margin-top:8px"><span class="zh">大型律所定制模型合作金额</span><span class="en">Custom model deals for large firms</span></p>
+    </div>
+  </div>
+  <div class="reveal-item" style="margin-top:auto;padding:14px 20px;background:rgba(184,149,106,0.06);border-radius:2px">
+    <p style="font-size:13px;text-align:center"><span class="zh">深度嵌入工作流（Word、iManage）+ 25,000+ 自定义 Agent = <strong>极高迁移成本</strong></span><span class="en">Deep workflow integration (Word, iManage) + 25,000+ custom agents = <strong>high switching costs</strong></span></p>
+  </div>
+</div>
+
+<!-- SLIDE 9: GROWTH STRATEGY -->
+<div class="slide" data-slide="8">
+  <div class="eyebrow"><span class="zh">增长战略</span><span class="en">GROWTH STRATEGY</span></div>
+  <h2><span class="zh">三引擎驱动持续增长</span><span class="en">Three Engines of Compounding Growth</span></h2>
+  <div class="flex-3 mt-24">
+    <div class="cap-card reveal-item">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div class="num">1</div>
+        <h3 style="margin:0"><span class="zh">横向扩展</span><span class="en">Horizontal</span></h3>
+      </div>
+      <p><span class="zh">律所 → 企业法务（500+ 团队）→ 资管（50 家）→ 金融、保险</span><span class="en">Law firms → In-house legal (500+ teams) → Asset mgmt (50) → Finance, insurance</span></p>
+    </div>
+    <div class="cap-card reveal-item">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div class="num">2</div>
+        <h3 style="margin:0"><span class="zh">纵向深化</span><span class="en">Vertical</span></h3>
+      </div>
+      <p><span class="zh">Workflow Agents 将复杂流程产品化 — M&A、尽调、基金设立、诉讼</span><span class="en">Workflow Agents productize complex workflows — M&A, DD, fund formation, motions</span></p>
+    </div>
+    <div class="cap-card reveal-item">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div class="num">3</div>
+        <h3 style="margin:0"><span class="zh">生态构建</span><span class="en">Ecosystem</span></h3>
+      </div>
+      <p><span class="zh">LexisNexis 战略联盟：判例法 + Shepard's Citations + 联合工作流</span><span class="en">LexisNexis alliance: case law + Shepard's Citations + co-developed workflows</span></p>
+    </div>
+  </div>
+  <div class="reveal-item" style="margin-top:auto;padding:14px 20px;background:rgba(184,149,106,0.06);border-radius:2px;text-align:center">
+    <p style="font-size:14px"><span class="zh"><strong>Shared Spaces</strong> — 律所与企业客户在同一 AI 环境中协作</span><span class="en"><strong>Shared Spaces</strong> — law firms and clients collaborate in the same AI environment</span></p>
+  </div>
+</div>
+
+<!-- SLIDE 10: FLYWHEEL -->
+<div class="slide dark" data-slide="9">
+  <div class="eyebrow"><span class="zh">护城河</span><span class="en">THE MOAT</span></div>
+  <h2><span class="zh">双边网络 + 数据飞轮</span><span class="en">Bilateral Network + Data Flywheel</span></h2>
+  <div class="flywheel-grid reveal-item">
+    <div class="flywheel-node">
+      <h3><span class="zh">&#10102; 律所部署</span><span class="en">&#10102; Firms Deploy</span></h3>
+      <p><span class="zh">企业法务跟进加入平台</span><span class="en">In-house legal teams follow</span></p>
+      <div class="flywheel-arrow" style="right:-14px;top:50%">&#8594;</div>
+    </div>
+    <div class="flywheel-node">
+      <h3><span class="zh">&#10103; 双边协作</span><span class="en">&#10103; Collaboration</span></h3>
+      <p><span class="zh">律所与客户在同一平台工作</span><span class="en">Firms &amp; clients work together</span></p>
+      <div class="flywheel-arrow" style="bottom:-16px;left:50%;transform:translateX(-50%)">&#8595;</div>
+    </div>
+    <div class="flywheel-node">
+      <h3><span class="zh">&#10105; 高粘性</span><span class="en">&#10105; Stickiness</span></h3>
+      <p><span class="zh">92% 月活 + 25K Agent 锁定</span><span class="en">92% usage + 25K agents lock in</span></p>
+      <div class="flywheel-arrow" style="top:-16px;left:50%;transform:translateX(-50%)">&#8593;</div>
+    </div>
+    <div class="flywheel-node">
+      <h3><span class="zh">&#10104; 数据飞轮</span><span class="en">&#10104; Data Flywheel</span></h3>
+      <p><span class="zh">使用数据持续优化模型</span><span class="en">Usage data improves models</span></p>
+      <div class="flywheel-arrow" style="left:-14px;top:50%">&#8592;</div>
+    </div>
+  </div>
+  <div class="reveal-item" style="margin-top:auto;max-width:700px;margin-left:auto;margin-right:auto;text-align:center">
+    <p style="font-size:14px;color:rgba(250,250,249,0.6);line-height:1.7"><span class="zh">竞争对手可以训练模型，但无法复制律所-客户双边网络。迁移成本是双向的。</span><span class="en">Competitors can train models, but can't replicate a bilateral network. Switching costs are bidirectional.</span></p>
+    <p style="font-size:12px;color:rgba(184,149,106,0.6);margin-top:8px">OpenAI's first investment · Earliest access to GPT-4</p>
+  </div>
+</div>
+
+<!-- SLIDE 11: COMPETITION -->
+<div class="slide" data-slide="10">
+  <div class="eyebrow"><span class="zh">竞争格局</span><span class="en">COMPETITIVE LANDSCAPE</span></div>
+  <h2><span class="zh">为法律而生</span><span class="en">Purpose-Built for Legal</span></h2>
+  <div class="flex mt-16 grow">
+    <div class="col reveal-item">
+      <div class="quadrant">
+        <div class="q-axis-x"></div>
+        <div class="q-axis-y"></div>
+        <div class="q-label" style="right:4px;top:calc(50% + 8px)"><span class="zh">法律专深 →</span><span class="en">Legal Depth →</span></div>
+        <div class="q-label" style="left:calc(50% + 8px);top:4px"><span class="zh">↑ AI 先进性</span><span class="en">↑ AI Sophistication</span></div>
+        <div class="q-dot highlight" style="left:82%;top:15%">&#9733; Harvey</div>
+        <div class="q-dot other" style="left:62%;top:28%">CoCounsel</div>
+        <div class="q-dot other" style="left:58%;top:48%">Lexis+ AI</div>
+        <div class="q-dot other" style="left:30%;top:55%">Clio</div>
+        <div class="q-dot other" style="left:22%;top:22%"><span class="zh">通用 LLM</span><span class="en">General LLMs</span></div>
+      </div>
+    </div>
+    <div class="col reveal-item" style="display:flex;flex-direction:column;justify-content:center;gap:20px">
+      <div>
+        <h3 style="font-size:15px"><span class="zh">法律专用多模型架构</span><span class="en">Legal-Specific Multi-Model</span></h3>
+        <p style="font-size:13px"><span class="zh">vs. 通用 LLM 包装</span><span class="en">vs. general LLM wrappers</span></p>
+      </div>
+      <div>
+        <h3 style="font-size:15px"><span class="zh">LexisNexis 联盟</span><span class="en">LexisNexis Alliance</span></h3>
+        <p style="font-size:13px"><span class="zh">中和传统玩家数据优势</span><span class="en">Neutralizes incumbents' data advantage</span></p>
+      </div>
+      <div>
+        <h3 style="font-size:15px"><span class="zh">唯一全覆盖平台</span><span class="en">Only Full-Spectrum Platform</span></h3>
+        <p style="font-size:13px"><span class="zh">AmLaw 100 + 500+ 企业法务 + 50 资管</span><span class="en">AmLaw 100 + 500+ in-house + 50 asset mgrs</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: CASE STUDIES -->
+<div class="slide" data-slide="11">
+  <div class="eyebrow"><span class="zh">客户案例</span><span class="en">CASE STUDIES</span></div>
+  <h2><span class="zh">真实客户，真实影响</span><span class="en">Real Impact for Real Clients</span></h2>
+  <div class="flex-3 mt-24">
+    <div class="card reveal-item">
+      <h3 style="color:var(--primary);font-size:15px">A&amp;O Shearman</h3>
+      <div class="gold-line" style="margin:10px 0"></div>
+      <p style="font-size:13px"><span class="zh">全球首家全面部署 Harvey 的顶级律所。3,500 律师发起 40,000+ 查询。现已进入 Agentic AI 阶段。</span><span class="en">First global elite firm to fully deploy Harvey. 3,500 lawyers, 40,000+ queries. Now rolling out agentic AI.</span></p>
+    </div>
+    <div class="card reveal-item">
+      <h3 style="color:var(--primary);font-size:15px">Latham &amp; Watkins</h3>
+      <div class="gold-line" style="margin:10px 0"></div>
+      <p style="font-size:13px"><span class="zh">全美第二大律所（$7B+ 营收，3,600+ 律师）签署企业级全所许可。</span><span class="en">Second-largest US firm ($7B+ revenue, 3,600+ lawyers) signs enterprise-wide license.</span></p>
+    </div>
+    <div class="card reveal-item">
+      <h3 style="color:var(--primary);font-size:15px">Deutsche Telekom</h3>
+      <div class="gold-line" style="margin:10px 0"></div>
+      <p class="quote" style="font-size:13px;line-height:1.55"><span class="zh">"AI 让我们精准应对复杂挑战，聚焦战略价值。"</span><span class="en">"Harvey enables us to tackle intricate legal issues and focus on strategic value."</span></p>
+      <p style="font-size:11px;color:var(--text-light);margin-top:6px">— Dr. Claudia Junker, GC</p>
+    </div>
+  </div>
+  <div class="reveal-item" style="margin-top:auto">
+    <p style="font-size:11px;color:var(--text-light)"><span class="zh"><strong>律所:</strong> A&amp;O Shearman · Latham · DLA Piper · Dentons &nbsp; <strong>企业:</strong> NBCUniversal · HSBC &nbsp; <strong>金融:</strong> KKR · Bridgewater · PwC UK</span><span class="en"><strong>Firms:</strong> A&amp;O Shearman · Latham · DLA Piper · Dentons &nbsp; <strong>Enterprise:</strong> NBCUniversal · HSBC &nbsp; <strong>Finance:</strong> KKR · Bridgewater · PwC UK</span></p>
+  </div>
+</div>
+
+<!-- SLIDE 13: SECURITY -->
+<div class="slide dark" data-slide="12">
+  <div class="eyebrow"><span class="zh">安全与合规</span><span class="en">ENTERPRISE SECURITY</span></div>
+  <h2><span class="zh">为最敏感的法律工作而设计</span><span class="en">Built for the Most Sensitive Legal Work</span></h2>
+  <div class="flex-4 mt-24 reveal-item">
+    <div class="cert-badge"><div style="font-size:18px;opacity:0.4">&#9745;</div><div><div class="cert-name">SOC 2 II</div><div class="cert-desc"><span class="zh">年度审计</span><span class="en">Annual audit</span></div></div></div>
+    <div class="cert-badge"><div style="font-size:18px;opacity:0.4">&#9745;</div><div><div class="cert-name">ISO 27001</div><div class="cert-desc"><span class="zh">信息安全</span><span class="en">InfoSec</span></div></div></div>
+    <div class="cert-badge"><div style="font-size:18px;opacity:0.4">&#9745;</div><div><div class="cert-name">GDPR</div><div class="cert-desc"><span class="zh">欧盟数据保护</span><span class="en">EU data protection</span></div></div></div>
+    <div class="cert-badge"><div style="font-size:18px;opacity:0.4">&#9745;</div><div><div class="cert-name">CCPA</div><div class="cert-desc"><span class="zh">加州隐私</span><span class="en">CA privacy</span></div></div></div>
+  </div>
+  <div class="flex mt-24 grow">
+    <div class="col">
+      <div class="pain-row reveal-item" style="border-color:rgba(250,250,249,0.06)">
+        <div class="pain-icon" style="opacity:0.3">&#9672;</div>
+        <div><div class="pain-title" style="color:#FAFAF9;font-size:14px"><span class="zh">零数据留存 (ZDR)</span><span class="en">Zero Data Retention</span></div><div class="pain-desc" style="font-size:12px"><span class="zh">模型供应商合同保证不保留数据</span><span class="en">Providers contractually retain nothing</span></div></div>
+      </div>
+      <div class="pain-row reveal-item" style="border-color:rgba(250,250,249,0.06)">
+        <div class="pain-icon" style="opacity:0.3">&#9672;</div>
+        <div><div class="pain-title" style="color:#FAFAF9;font-size:14px"><span class="zh">区域化部署</span><span class="en">Regional Hosting</span></div><div class="pain-desc" style="font-size:12px"><span class="zh">美国 / 欧盟·瑞士 / 澳大利亚</span><span class="en">US / EU-Switzerland / Australia</span></div></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="pain-row reveal-item" style="border-color:rgba(250,250,249,0.06)">
+        <div class="pain-icon" style="opacity:0.3">&#9672;</div>
+        <div><div class="pain-title" style="color:#FAFAF9;font-size:14px"><span class="zh">EU-US 数据隐私框架</span><span class="en">EU-US Data Privacy Framework</span></div><div class="pain-desc" style="font-size:12px"><span class="zh">首个通过认证的 AI 初创公司</span><span class="en">First AI startup to certify</span></div></div>
+      </div>
+      <div class="pain-row reveal-item" style="border-color:rgba(250,250,249,0.06)">
+        <div class="pain-icon" style="opacity:0.3">&#9672;</div>
+        <div><div class="pain-title" style="color:#FAFAF9;font-size:14px"><span class="zh">企业级控制</span><span class="en">Enterprise Controls</span></div><div class="pain-desc" style="font-size:12px">SAML SSO · Audit logs · IP allow-listing</div></div>
+      </div>
+    </div>
+  </div>
+  <p class="reveal-item" style="font-size:11px;color:rgba(250,250,249,0.2);margin-top:auto"><span class="zh">渗透测试: Schellman · NCC Group · Bishop Fox &nbsp; 基础设施: Microsoft Azure</span><span class="en">Pentesting: Schellman · NCC Group · Bishop Fox &nbsp; Infrastructure: Microsoft Azure</span></p>
+</div>
+
+<!-- SLIDE 14: TEAM -->
+<div class="slide" data-slide="13">
+  <div class="eyebrow"><span class="zh">团队</span><span class="en">TEAM</span></div>
+  <h2><span class="zh">法律深度 × AI 前沿</span><span class="en">Where Legal Depth Meets AI Frontier</span></h2>
+  <div class="grow" style="display:flex;flex-direction:column;justify-content:center">
+    <div class="flex">
+      <div class="col reveal-item">
+        <div style="display:flex;gap:20px;align-items:flex-start">
+          <div style="width:72px;height:72px;border-radius:50%;background:var(--bg-warm);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:24px;color:var(--primary);font-family:var(--font-serif)">WW</span></div>
+          <div>
+            <h3 style="font-size:18px">Winston Weinberg</h3>
+            <p style="font-size:13px;color:var(--primary);margin-top:2px"><span class="zh">CEO 兼联合创始人</span><span class="en">CEO &amp; Co-Founder</span></p>
+            <p style="font-size:13px;margin-top:8px"><span class="zh">前 O'Melveny &amp; Myers 证券诉讼律师。定义了"法律 AI"品类。</span><span class="en">Former securities litigator at O'Melveny &amp; Myers. Defined the "Legal AI" category.</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="col reveal-item">
+        <div style="display:flex;gap:20px;align-items:flex-start">
+          <div style="width:72px;height:72px;border-radius:50%;background:var(--bg-warm);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:24px;color:var(--primary);font-family:var(--font-serif)">GP</span></div>
+          <div>
+            <h3 style="font-size:18px">Gabriel Pereyra</h3>
+            <p style="font-size:13px;color:var(--primary);margin-top:2px"><span class="zh">总裁兼联合创始人</span><span class="en">President &amp; Co-Founder</span></p>
+            <p style="font-size:13px;margin-top:8px"><span class="zh">前 Google DeepMind &amp; Meta AI 研究员。主导 AI 研究与技术架构。</span><span class="en">Former researcher at Google DeepMind &amp; Meta. Leads AI research and architecture.</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex-3 reveal-item" style="margin-top:auto">
+    <div class="metric"><div class="metric-num">1,000<span style="font-size:18px">+</span></div><div class="metric-label"><span class="zh">员工（2026）</span><span class="en">Employees (2026)</span></div></div>
+    <div class="metric"><div class="metric-num" style="font-size:28px">~10%</div><div class="metric-label"><span class="zh">前执业律师</span><span class="en">Ex-Practicing Lawyers</span></div></div>
+    <div class="metric"><div class="metric-num" style="font-size:18px">DeepMind · Meta · Stripe</div><div class="metric-label"><span class="zh">顶尖人才来源</span><span class="en">World-Class Talent</span></div></div>
+  </div>
+</div>
+
+<!-- SLIDE 15: VISION -->
+<div class="slide dark" data-slide="14">
+  <div class="grow" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;max-width:900px;margin:0 auto">
+    <div class="eyebrow"><span class="zh">愿景</span><span class="en">VISION</span></div>
+    <div class="closing-quote reveal-item" style="color:rgba(250,250,249,0.85)">
+      <span class="zh">"AI 不只是辅助律师——它正在成为法律工作运行的系统。"</span>
+      <span class="en">"AI isn't just assisting lawyers — it's becoming the system through which legal work gets done."</span>
+    </div>
+    <p class="reveal-item" style="font-size:14px;color:rgba(250,250,249,0.35);margin-top:16px">— Winston Weinberg, CEO &amp; Co-Founder</p>
+    <div class="gold-line reveal-item" style="margin:28px auto"></div>
+  </div>
+  <div class="flex-3 reveal-item" style="margin-top:auto">
+    <div style="text-align:center"><h3 style="font-size:14px;color:#FAFAF9"><span class="zh">长程 Agent</span><span class="en">Long-Horizon Agents</span></h3><p style="font-size:12px;color:rgba(250,250,249,0.45)"><span class="zh">端到端自主完成基金设立、M&A 尽调</span><span class="en">Autonomous fund formation, M&A DD</span></p></div>
+    <div style="text-align:center"><h3 style="font-size:14px;color:#FAFAF9"><span class="zh">税务 + 会计扩展</span><span class="en">Tax &amp; Accounting</span></h3><p style="font-size:12px;color:rgba(250,250,249,0.45)"><span class="zh">LexisNexis 联盟已覆盖税务法规</span><span class="en">LexisNexis covers tax regulatory data</span></p></div>
+    <div style="text-align:center"><h3 style="font-size:14px;color:#FAFAF9">Shared Spaces</h3><p style="font-size:12px;color:rgba(250,250,249,0.45)"><span class="zh">律所-企业法务双边协作</span><span class="en">Bilateral firm–client collaboration</span></p></div>
+  </div>
+</div>
+
+<!-- SLIDE 16: THE ASK -->
+<div class="slide dark" data-slide="15">
+  <div class="eyebrow"><span class="zh">融资</span><span class="en">THE ASK</span></div>
+  <h2><span class="zh">$11B 估值 · $1B+ 累计融资</span><span class="en">$11B Valuation · $1B+ Total Raised</span></h2>
+  <div class="flex mt-24 grow">
+    <div class="col reveal-item" style="display:flex;flex-direction:column;justify-content:center;align-items:center">
+      <div class="beat-num" style="font-size:80px">$11<span style="font-size:36px">B</span></div>
+      <div class="stat-label" style="color:rgba(250,250,249,0.35);font-size:15px;margin-top:8px"><span class="zh">估值</span><span class="en">Valuation</span></div>
+    </div>
+    <div class="col reveal-item">
+      <h3 style="font-size:13px;color:rgba(250,250,249,0.35);letter-spacing:1.5px;margin-bottom:12px;font-family:var(--font-main)"><span class="zh">全球顶级投资机构</span><span class="en">BACKED BY THE WORLD'S BEST</span></h3>
+      <div class="investor-grid">
+        <div class="investor-pill">Sequoia</div>
+        <div class="investor-pill">GIC</div>
+        <div class="investor-pill">a16z</div>
+        <div class="investor-pill">Kleiner Perkins</div>
+        <div class="investor-pill">Coatue</div>
+        <div class="investor-pill">Google Ventures</div>
+        <div class="investor-pill">OpenAI</div>
+        <div class="investor-pill">T. Rowe Price</div>
+        <div class="investor-pill">Elad Gil</div>
+      </div>
+      <div style="margin-top:20px">
+        <h3 style="font-size:13px;color:rgba(250,250,249,0.35);letter-spacing:1.5px;margin-bottom:10px;font-family:var(--font-main)"><span class="zh">资金用途</span><span class="en">FUND ALLOCATION</span></h3>
+        <p style="font-size:13px;color:rgba(250,250,249,0.55);line-height:1.8"><span class="zh">&#9670; AI Agent 能力持续扩展<br>&#9670; 全球法律工程团队扩张<br>&#9670; 新垂直领域（税务、会计）<br>&#9670; 产品研发与基础设施</span><span class="en">&#9670; Scale AI agent capabilities<br>&#9670; Expand legal engineering globally<br>&#9670; New verticals (tax, accounting)<br>&#9670; Product R&amp;D &amp; infrastructure</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: CONTACT -->
+<div class="slide dark" data-slide="16">
+  <div class="grow" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center">
+    <div style="font-family:var(--font-serif);font-size:48px;font-weight:500;color:rgba(250,250,249,0.15);letter-spacing:4px;margin-bottom:32px">Harvey</div>
+    <p style="font-size:18px;color:rgba(250,250,249,0.6);margin-bottom:8px">harvey.ai</p>
+    <div class="gold-line" style="margin:20px auto"></div>
+    <p style="font-size:16px;color:rgba(250,250,249,0.5);margin-top:16px">
+      <span class="zh">申请演示</span><span class="en">Request a Demo</span>
+      <span style="color:rgba(250,250,249,0.2)"> · </span>
+      harvey.ai/demo
+    </p>
+  </div>
+  <p style="font-size:11px;color:rgba(250,250,249,0.2);margin-top:auto;text-align:center;letter-spacing:0.5px">
+    <span class="zh">本文件仅供指定收件人查阅 · 内容属于保密信息</span><span class="en">Confidential — For Intended Recipients Only</span>
+  </p>
+</div>
+
+</div>
+
+<div class="slide-nav" id="nav" style="display:none"></div>
+<div class="deck-toolbar" id="toolbar" style="display:none">
+  <div class="slide-counter" id="counter"></div>
+  <button class="lang-btn" id="langBtn" onclick="toggleLang()"><span class="active-lang">ZH</span> | EN</button>
+  <button class="pdf-btn" id="pdfBtn" onclick="exportPDF()">&#11015; PDF</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const DECK_PASSWORD='harvey';
+const WATERMARK_TEXT='Harvey Confidential';
+const DECK_TITLE='Harvey Pitch Deck';
+
+function scaleDeck(){const d=document.getElementById('deck');if(!d||d.style.display==='none')return;const sw=1280,sh=720,vw=window.innerWidth,vh=window.innerHeight;const isLM=vw>vh&&vw<1200;const scale=isLM?(vw/sw):Math.min(vw/sw,vh/sh);d.style.transform=scale<0.99?`scale(${scale})`:'';d.style.overflow=isLM?'hidden':''}
+window.addEventListener('resize',scaleDeck);
+window.addEventListener('orientationchange',()=>setTimeout(scaleDeck,100));
+
+const authGate=document.getElementById('authGate'),authInput=document.getElementById('authInput'),authError=document.getElementById('authError'),deck=document.getElementById('deck');
+function showDeck(){deck.style.display='';document.getElementById('nav').style.display='';document.getElementById('toolbar').style.display='';document.getElementById('progress').style.display='';scaleDeck()}
+if(sessionStorage.getItem('deck-auth')==='1'){authGate.style.display='none';showDeck()}
+function tryAuth(){if(authInput.value===DECK_PASSWORD){sessionStorage.setItem('deck-auth','1');authGate.classList.add('hidden');showDeck();setTimeout(()=>{authGate.style.display='none'},400)}else{authError.textContent='Incorrect password';authInput.classList.add('shake');authInput.value='';setTimeout(()=>{authInput.classList.remove('shake')},400)}}
+authInput.addEventListener('keydown',e=>{if(e.key==='Enter')tryAuth()});
+document.getElementById('authBtn').addEventListener('click',tryAuth);
+
+const slides=document.querySelectorAll('.slide'),nav=document.getElementById('nav'),counter=document.getElementById('counter');
+let current=0;
+slides.forEach((_,i)=>{const btn=document.createElement('button');btn.addEventListener('click',()=>goTo(i));nav.appendChild(btn)});
+function goTo(n){if(n<0||n>=slides.length)return;slides[current].classList.remove('active');current=n;slides[current].classList.add('active');updateNav()}
+const progress=document.getElementById('progress');
+function updateNav(){nav.querySelectorAll('button').forEach((btn,i)=>{btn.classList.toggle('active',i===current)});counter.textContent=`${current+1} / ${slides.length}`;progress.style.width=((current)/(slides.length-1))*100+'%';animateNumbers(slides[current])}
+
+function animateNumbers(slide){const isEn=document.body.classList.contains('lang-en');const ak=isEn?'animatedEn':'animatedZh';slide.querySelectorAll('.beat-num').forEach(el=>{if(el.dataset[ak])return;el.dataset[ak]='1';const ls=el.querySelector(isEn?'.en':'.zh');const src=ls||el;if(!src.childNodes[0])return;const raw=src.childNodes[0].textContent.trim();const suffix=src.querySelector('span');const sH=suffix?suffix.outerHTML:'';const clean=raw.replace(/[$,]/g,'');const target=parseFloat(clean);if(isNaN(target))return;const pre=raw.startsWith('$')?'$':'';const comma=raw.includes(',');const dec=clean.includes('.')?clean.split('.')[1].length:0;const dur=800,start=performance.now();function tick(now){const t=Math.min((now-start)/dur,1),ease=1-Math.pow(1-t,3),val=target*ease;let f=dec>0?val.toFixed(dec):Math.round(val).toString();if(comma)f=Number(f).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});src.innerHTML=pre+f+sH;if(t<1)requestAnimationFrame(tick)}requestAnimationFrame(tick)})}
+
+function toggleLang(){const isEn=document.body.classList.toggle('lang-en');document.getElementById('langBtn').innerHTML=isEn?'ZH | <span class="active-lang">EN</span>':'<span class="active-lang">ZH</span> | EN';slides[current].querySelectorAll('.beat-num').forEach(el=>{delete el.dataset.animatedEn;delete el.dataset.animatedZh});animateNumbers(slides[current])}
+
+async function exportPDF(){const btn=document.getElementById('pdfBtn');if(typeof html2canvas==='undefined'||!window.jspdf){alert('PDF libraries still loading.');return}btn.classList.add('loading');btn.innerHTML='\u23F3 1/'+slides.length;try{const{jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'landscape',unit:'px',format:[1280,720]});const de=document.getElementById('deck'),sc=current,st=de.style.transform;de.style.transform='none';for(let i=0;i<slides.length;i++){btn.innerHTML='\u23F3 '+(i+1)+'/'+slides.length;slides.forEach((s,j)=>{s.style.transition='none';if(j===i){s.classList.add('active');s.style.position='relative';s.style.width='1280px';s.style.height='720px';s.style.opacity='1';s.style.visibility='visible'}else{s.classList.remove('active');s.style.position='absolute';s.style.opacity='0';s.style.visibility='hidden'}});await new Promise(r=>setTimeout(r,100));const c=await html2canvas(slides[i],{width:1280,height:720,scale:2,useCORS:true,allowTaint:true,logging:false,backgroundColor:null});const ctx=c.getContext('2d');ctx.save();ctx.font='80px sans-serif';ctx.fillStyle='rgba(0,0,0,0.04)';for(let y=-c.height;y<c.height*2;y+=360)for(let x=-c.width;x<c.width*2;x+=800){ctx.save();ctx.translate(x,y);ctx.rotate(-35*Math.PI/180);ctx.fillText(WATERMARK_TEXT,0,0);ctx.restore()}ctx.restore();if(i>0)pdf.addPage([1280,720],'landscape');pdf.addImage(c.toDataURL('image/jpeg',0.92),'JPEG',0,0,1280,720)}de.style.transform=st;slides.forEach(s=>{s.style.transition='';s.style.position='';s.style.width='';s.style.height='';s.style.opacity='';s.style.visibility=''});goTo(sc);pdf.save(DECK_TITLE.replace(/\s+/g,'-')+'-'+(document.body.classList.contains('lang-en')?'EN':'ZH')+'.pdf')}catch(e){console.error(e);alert('PDF export failed: '+e.message)}btn.classList.remove('loading');btn.innerHTML='\u2B07 PDF'}
+
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();goTo(current+1)}if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();goTo(current-1)}if(e.key==='Home')goTo(0);if(e.key==='End')goTo(slides.length-1)});
+let tx=0;document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX});document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>50)goTo(current+(dx<0?1:-1))});
+updateNav();
+</script>
+</body>
+</html>
