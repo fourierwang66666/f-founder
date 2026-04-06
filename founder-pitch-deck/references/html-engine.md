@@ -9,24 +9,33 @@ documented here match the base template engine exactly. Copy-paste ready.
 
 Set in `:root`. Replace default values with design tokens extracted in Step 1.
 
-| Token | Purpose | Default |
-|-------|---------|---------|
-| `--red` | Primary brand color. Cover bg, accent elements, active nav dots, `.num` circles | `#da3d3d` |
-| `--red-dark` | Darker variant for hover/active states | `#b40003` |
-| `--cream` | Light text on primary backgrounds (`.slide.red` text color) | `#fffee1` |
-| `--green` | Positive indicator color (tags, growth metrics) | `#0f8e61` |
-| `--orange` | Warning/neutral indicator color (tags) | `#cb4a00` |
-| `--bg` | Default slide background | `#faf9f6` |
-| `--bg-warm` | Warm background for cards | `#fffefc` |
-| `--text` | Primary text -- headings, important copy | `rgba(0,0,0,0.82)` |
-| `--text-mid` | Secondary text -- body paragraphs, descriptions | `rgba(0,0,0,0.65)` |
-| `--text-light` | Tertiary text -- labels, captions, eyebrows, stat-labels | `rgba(0,0,0,0.45)` |
-| `--border` | Subtle borders and dividers | `rgba(0,0,0,0.1)` |
-| `--border-mid` | Stronger borders (architecture diagrams) | `rgba(0,0,0,0.25)` |
+**Template placeholders** (replaced at generation time in `base-template.html`):
+
+| Placeholder | CSS Variable | Purpose | Default |
+|-------------|-------------|---------|---------|
+| `{{PRIMARY}}` | `--primary` | Primary brand color. Cover bg, accent elements, `.num` circles | `#da3d3d` |
+| `{{PRIMARY_DARK}}` | `--primary-dark` | Darker variant for hover/active states | `#b40003` |
+| `{{ACCENT}}` | `--accent` | Secondary accent color (tags, growth metrics) | `#0f8e61` |
+| `{{BG}}` | `--bg` | Default slide background | `#faf9f6` |
+| `{{BG_WARM}}` | `--bg-warm` | Warm background for cards | `#fffefc` |
+| `{{TEXT}}` | `--text` | Primary text — headings, important copy | `rgba(0,0,0,0.82)` |
+| `{{TEXT_MID}}` | `--text-mid` | Secondary text — body paragraphs, descriptions | `rgba(0,0,0,0.65)` |
+| `{{TEXT_LIGHT}}` | `--text-light` | Tertiary text — labels, captions, eyebrows | `rgba(0,0,0,0.45)` |
+| `{{BORDER}}` | `--border` | Subtle borders and dividers | `rgba(0,0,0,0.1)` |
+| `{{FONT_MAIN}}` | `--font-main` | Heading + body font stack | `'Inter','Noto Sans SC',system-ui,sans-serif` |
+| `{{FONT_SERIF}}` | `--font-serif` | Serif for quotes and editorial text | `'Cormorant Garamond','Songti SC',serif` |
+| `{{GOOGLE_FONTS_LINK}}` | — | Full `<link>` tag for Google Fonts | — |
+| `{{DECK_TITLE}}` | — | Page `<title>` and PDF filename | — |
+| `{{PASSWORD}}` | — | Auth gate password (JS constant) | — |
+| `{{WATERMARK}}` | — | PDF watermark text (JS constant) | — |
+| `{{BRAND_LOGO_TEXT}}` | — | Brand name shown on auth gate | — |
+
+Non-configurable variables (hardcoded in template):
+
+| CSS Variable | Purpose | Value |
+|-------------|---------|-------|
+| `--border-mid` | Stronger borders (diagrams) | `rgba(0,0,0,0.25)` |
 | `--shadow` | Flat shadow for emphasized elements | `3px 3px 0 0 rgba(0,0,0,0.8)` |
-| `--font-main` | Heading + body font stack | `'Kiwi Maru','Noto Sans SC',system-ui,sans-serif` |
-| `--font-cn` | Chinese serif for decorative/closing quotes | `'Songti SC','STSong','Noto Serif SC',serif` |
-| `--font-serif` | Western serif for quotes and editorial text | `'Cormorant Garamond','Songti SC',serif` |
 | `--slide-w` | Slide canvas width (do not change) | `1280px` |
 | `--slide-h` | Slide canvas height (do not change) | `720px` |
 
@@ -47,7 +56,7 @@ All slides: `padding: 60px 80px; display: flex; flex-direction: column`.
 - Use for: high-impact vision slides, opening/closing, dramatic data reveals
 
 **Primary** -- `.slide.red`
-- bg: `var(--red)` | text/h1/h2: `var(--cream)` (`#fffee1`)
+- bg: `var(--primary)` | text/h1/h2: `#fffee1`
 - p: `rgba(255,255,255,0.65)` | eyebrow: `rgba(255,254,225,0.6)`
 - Use for: cover slide, CTA, ask/fundraising slides
 
@@ -69,7 +78,7 @@ All slides: `padding: 60px 80px; display: flex; flex-direction: column`.
 | `.cover-tagline` | 64px | 500 | 1.15 | inherit | Cover headline (letter-spacing -1px) |
 | `.cover-sub` | 20px | 300 | default | inherit | Cover subtitle (mt 12px) |
 
-`.beat-num`: 72px, weight 500, `color: var(--red)` on light slides. On dark: `rgba(255,255,255,0.9)`.
+`.beat-num`: 72px, weight 500, `color: var(--primary)` on light slides. On dark: `rgba(255,255,255,0.9)`.
 
 ---
 
@@ -204,7 +213,7 @@ Pain rows: flex row, 16px gap, bottom border 0.5px. Wrap in `.grow` for vertical
 </div>
 ```
 
-`.num`: 32px circle, `var(--red)` bg, `var(--cream)` text. `.cap-items li::before`: red dot prefix.
+`.num`: 32px circle, `var(--primary)` bg, ``#fffee1`` text. `.cap-items li::before`: red dot prefix.
 
 ### Team Cards (3 columns)
 
@@ -245,7 +254,7 @@ Neutral variant: use `background:rgba(0,0,0,0.04)` instead.
 
 ## 9. Decorative Elements
 
-**`.gold-line`** -- 48px x 2px gradient (`var(--red)` to `#e8a04c`) with shimmer animation. Section divider.
+**`.gold-line`** -- 48px x 2px gradient (`var(--primary)` to `#e8a04c`) with shimmer animation. Section divider.
 
 **`.num`** -- 32px circle, primary bg, cream text. For capability cards and process steps.
 

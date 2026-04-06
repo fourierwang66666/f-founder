@@ -14,25 +14,9 @@ args:
     required: false
 ---
 
-## Preamble (run first)
-
-```bash
-_FF_DIR="${FFOUNDER_DIR:-$(find ~/.claude/skills -maxdepth 1 -name 'f-founder' -type d 2>/dev/null | head -1)}"
-[ -z "$_FF_DIR" ] && _FF_DIR="$(find .claude/skills -maxdepth 1 -name 'f-founder' -type d 2>/dev/null | head -1)"
-if [ -n "$_FF_DIR" ] && [ -f "$_FF_DIR/bin/f-founder-update-check" ]; then
-  _UPD=$("$_FF_DIR/bin/f-founder-update-check" 2>/dev/null || true)
-  [ -n "$_UPD" ] && echo "$_UPD" || true
-fi
-```
-
-If output shows `UPGRADE_AVAILABLE <old> <new>`: tell the user
-"f-founder v{new} is available (you have v{old}). Run `cd ~/.claude/skills/f-founder && git pull` to upgrade."
-
----
-
 # founder-pitch-deck: Startup Pitch Deck Generator
 
-Generate a single-file HTML pitch deck that looks like it was designed by a top-tier agency. The workflow walks the founder through 8 steps: design extraction, content input, copy confirmation, narrative review, slide structure design, HTML generation, visual QA, and deployment.
+Generate a single-file HTML pitch deck that looks like it was designed by a top-tier agency. The workflow walks the founder through 7 steps: design extraction, content input, copy & layout confirmation, narrative review, HTML generation, visual QA, and deployment.
 
 ## Overview
 
@@ -129,253 +113,47 @@ If the `source` arg is provided, skip the first question and detect the input ty
 
 Extract or build a design token set that drives the entire deck's look and feel. **This step requires visually seeing the brand — not just reading code.**
 
-### Input Path A: Brand Website URL (preferred)
+Detect which input the founder provides and follow the corresponding path. For detailed extraction procedures (JS snippets, font identification flow, logo extraction), read `references/brand-extraction.md`.
 
-**Two-phase extraction: visual analysis first, then code parsing.**
+### Input paths
 
-#### Phase 1: Visual Analysis (REQUIRED)
+**Path A: Brand Website URL** (preferred) — Use `browse` skill to screenshot the site, visually analyze colors/typography/mood, extract logo via JS, then parse CSS for exact values. Three phases: visual analysis → code extraction → present summary. See `references/brand-extraction.md` Sections 1-3.
 
-**DO THIS NOW:** Call the Skill tool with skill="browse" and navigate to the brand website.
+**Path A2: Reference Deck** — Use `browse` to screenshot slides, analyze design language, extract tokens. See `references/brand-extraction.md` Section 2.
 
-Take these screenshots and visually analyze each one:
+**Path B: Brand Guideline PDF** — Use `pdf` skill to parse colors, fonts, logo. See `references/brand-extraction.md` Section 3.
 
-1. **Full homepage screenshot** (1280×800) — analyze:
-   - Overall visual density: spacious or packed?
-   - Color temperature: warm, cool, or neutral?
-   - Visual rhythm: how do sections flow? Is there tension or calm?
-   - Typography weight: are headings heavy/bold or light/thin?
-   - Dark vs light: what is the dominant background treatment?
+**Path C: Interactive Q&A** — If no source is available, ask five questions:
+1. **Primary color** — hex code, or pick from logo
+2. **Style mood** — `minimal` | `bold` | `elegant` | `tech`
+3. **Font pairing** — present 3 curated options from `references/font-system.md` Section 2
+4. **CJK requirement** — SC, TC, JP, or none
+5. **Company name** — for cover slide and watermark
 
-2. **Header/nav close-up screenshot** — analyze:
-   - **Logo**: what does it look like? Is it a wordmark, icon, or combination mark? What colors does it use?
-   - Navigation style: minimal or rich?
-   - Overall brand tone conveyed by the top-of-page impression
-
-3. **Logo extraction** (while still in browse session) — execute JavaScript in the browser to extract the actual logo asset:
-   ```javascript
-   // Try multiple common selectors — logos live in many places
-   const selectors = [
-     'header svg', 'nav svg', '[class*=logo] svg', '[id*=logo] svg',
-     'a[href="/"] svg', '.navbar svg', '.brand svg',
-     'header img', 'nav img', '[class*=logo] img', '[id*=logo] img',
-     'a[href="/"] img', '.navbar img', '.brand img'
-   ];
-   for (const sel of selectors) {
-     const el = document.querySelector(sel);
-     if (el) {
-       if (el.tagName === 'svg') console.log('SVG:', el.outerHTML);
-       else console.log('IMG:', el.src, el.naturalWidth, el.naturalHeight);
-     }
-   }
-   ```
-   - **If SVG found**: extract the full `outerHTML` — this is the best case, the logo can be embedded directly in the deck with no external dependency
-   - **If `<img>` found**: get the `src` URL. Then download it:
-     ```bash
-     curl -sL "<logo-url>" -o /tmp/logo-extracted.png  # or .svg
-     ```
-   - **If nothing found via selectors**: look at the screenshot you took in step 2, describe the logo visually, and ask the founder to provide the logo file directly
-   - **Verify**: compare the extracted asset against your header screenshot — does it match what you saw?
-
-4. **Hero section screenshot** — analyze:
-   - Hero treatment: image-based, gradient, solid color, or illustration?
-   - CTA button styling: color, roundness, shadow
-   - Heading size and weight relative to body text
-   - Whitespace above and below
-
-5. **One additional page** (e.g., About, Product, or Pricing) — analyze:
-   - Is the visual language consistent with the homepage?
-   - Any secondary patterns: cards, grids, testimonial blocks?
-
-For each screenshot, write down your visual observations in natural language. These observations are the primary input for design tokens — not CSS parsing.
-
-#### Phase 2: Code Extraction (supplementary)
-
-Use `WebFetch` to grab the homepage HTML and extract **exact values** that support your visual observations:
-
-- **Colors** — hex/RGB values from CSS variables, buttons, backgrounds. Cross-reference with what you SAW in the screenshots.
-- **Fonts** — follow the font identification flow below
-- **Logo** — already extracted in Phase 1 step 3 via browse JS. If that failed, search the HTML for `<img>` tags with "logo" in src/alt/class, or `<svg>` elements in the `<header>`. WebFetch is a fallback — browse JS extraction is more reliable because it sees the rendered DOM including dynamically loaded elements.
-
-**Font extraction flow** (goal: use the EXACT same fonts as the brand, not substitutes):
-
-**Step 1: Extract font declarations via browse JS** (while still in the browse session from Phase 1):
-
-```javascript
-// Extract all @font-face declarations and their source URLs
-const fonts = [];
-for (const sheet of document.styleSheets) {
-  try {
-    for (const rule of sheet.cssRules) {
-      if (rule instanceof CSSFontFaceRule) {
-        fonts.push({
-          family: rule.style.getPropertyValue('font-family').replace(/['"]/g, ''),
-          src: rule.style.getPropertyValue('src'),
-          weight: rule.style.getPropertyValue('font-weight'),
-          style: rule.style.getPropertyValue('font-style')
-        });
-      }
-    }
-  } catch(e) {} // CORS-blocked sheets will throw
-}
-// Also get computed fonts on key elements
-const heading = document.querySelector('h1, h2, .hero-title, [class*=heading]');
-const body = document.querySelector('p, .body-text, article');
-console.log('FONTS:', JSON.stringify(fonts));
-if (heading) console.log('HEADING_FONT:', getComputedStyle(heading).fontFamily, getComputedStyle(heading).fontWeight);
-if (body) console.log('BODY_FONT:', getComputedStyle(body).fontFamily, getComputedStyle(body).fontWeight);
-```
-
-**Step 2: Determine font source and extract** (in priority order):
-
-1. **Google Fonts `<link>` tag** — parse the URL for family names and weights. Best case: directly reusable via the same `<link>` tag in the deck. No download needed.
-
-2. **`@font-face` with downloadable URLs** — if the JS extraction found `@font-face` rules with `url(...)` sources (WOFF2/WOFF/TTF files):
-   ```bash
-   # Download each font file
-   curl -sL "https://example.com/fonts/brand-regular.woff2" -o /tmp/brand-regular.woff2
-   curl -sL "https://example.com/fonts/brand-bold.woff2" -o /tmp/brand-bold.woff2
-   # Base64 encode for embedding
-   base64 -i /tmp/brand-regular.woff2 | tr -d '\n' > /tmp/brand-regular.b64
-   ```
-   Then embed in the deck's CSS as:
-   ```css
-   @font-face {
-     font-family: 'BrandFont';
-     src: url(data:font/woff2;base64,<base64-data>) format('woff2');
-     font-weight: 400;
-   }
-   ```
-   **This gives 100% identical fonts** — no substitution, no visual difference from the original site.
-
-3. **Third-party font services** (Adobe Fonts, Monotype, fonts.com) — these often block direct download. If the `@font-face` URLs return 403/CORS errors:
-   - Try downloading with the site's `Referer` header: `curl -sL -H "Referer: https://example.com" "<font-url>"`
-   - If still blocked → fall through to step 4
-
-4. **Google Fonts match** — search Google Fonts for the exact font name. Many commercial fonts have open-source versions or are available on Google Fonts.
-
-5. **Substitution Table fallback** — ONLY if steps 1-4 all fail. Look up in `references/font-system.md` Section 4. Explain: "Your site uses '{BrandFont}' which I couldn't download or find on Google Fonts. '{Substitute}' has very similar proportions — shall I use that, or can you provide the font files directly?"
-
-**Step 3: Extract typography details** (from the same browse JS results):
-
-- **Weight** — heading weight (500? 600? 700?) and body weight (300? 400?) from `getComputedStyle`
-- **Letter-spacing** — especially negative tracking on headings (-0.5px to -1px)
-- **Line-height** — body text line-height (1.5-1.7 is standard)
-- **Font-size ratio** — heading size vs body size (helps reproduce the visual hierarchy)
-
-#### Phase 3: Present Visual Summary
-
-Present to the founder:
-1. The screenshots you took (so they can verify you saw the right thing)
-2. Your visual observations in plain language: "Your brand feels X — Y colors, Z typography style, with a W overall mood"
-3. The extracted design tokens for confirmation
-4. The logo: show what you extracted — if SVG, show a snippet of the SVG code and confirm it's the right logo; if image, show the URL and file size. If extraction failed, show the header screenshot and ask the founder to provide the logo file directly.
-
-**Wait for founder confirmation before proceeding.**
-
-### Input Path A2: Reference Deck URL or File
-
-If the founder provides a reference deck (another company's pitch deck, a PDF, or a URL to an existing deck):
-
-**DO THIS NOW:** Call the Skill tool with skill="browse" and navigate to the reference deck.
-
-1. Screenshot **every slide** (or at least 5-6 representative slides)
-2. For each slide, analyze:
-   - Color palette in use (backgrounds, text, accents)
-   - Typography: heading vs body weight, size ratio, font style (geometric, humanist, serif)
-   - Layout patterns: centered vs left-aligned, use of grids, whitespace ratio
-   - Visual elements: charts, icons, photos, illustrations — what style?
-   - Slide transitions: dark/light alternation pattern
-3. Write a **design language summary**: "This deck uses a [mood] aesthetic — [description of colors], [typography feel], [layout approach], [notable visual techniques]"
-4. Extract actionable design tokens from the visual analysis
-
-This is how you capture the "feel" of a Harvey deck vs a HappyCappy deck — by actually looking at them, not reading their source code.
-
-### Input Path B: Brand Guideline PDF
-
-Use the `pdf` skill to parse. Look for:
-- Color palette section (hex values, RGB, or named swatches)
-- Typography section (font names, weights, sizes) -- cross-reference with Substitution Table if fonts are commercial
-- Logo usage section (grab a logo asset URL or path)
-
-If the PDF contains visual examples (mockups, slide samples), use the `Read` tool to view the PDF pages as images and visually analyze the design language — same as Path A Phase 1.
-
-### Input Path C: Interactive Q&A
-
-If no source is available, ask the founder five questions:
-
-1. **Primary color** -- "What is your brand's primary color? (hex code, or I can pick from your logo)"
-2. **Style mood** -- present options:
-   - `minimal` -- lots of whitespace, restrained palette, clean lines
-   - `bold` -- saturated colors, large type, high contrast
-   - `elegant` -- serif fonts, muted tones, editorial feel
-   - `tech` -- dark backgrounds, monospace accents, gradient highlights
-3. **Font pairing** -- present 3 curated options from the **Mood-Based Pairing Library** (`references/font-system.md` Section 2), each with a description of feel and best-fit industry. Example:
-   > Option 1 (Recommended): Inter + Noto Sans SC — clean, universally readable. Used by Linear, Vercel, Stripe.
-   > Option 2: DM Sans + Noto Sans SC — slightly warmer, more personality.
-   > Option 3: Plus Jakarta Sans + Noto Sans SC — geometric and friendly, modern startup feel.
-   > Or name your own font and I'll find the closest Google Fonts match.
-4. **CJK requirement** -- Simplified Chinese (SC), Traditional Chinese (TC), Japanese (JP), or none
-5. **Company name** -- for cover slide and watermark text
-
-### Input Path D: Logo File Provided Directly
-
-If the founder provides a logo file (SVG, PNG, PDF):
-
-1. **Read the file visually** using the `Read` tool (for images/PDFs) to see the actual logo
-2. Extract colors from the logo — these are the most authoritative brand colors
-3. Analyze the logo style to inform mood: geometric logo → tech/minimal mood, handwritten → elegant, bold shapes → bold
-4. Store the logo path or base64-encode it for embedding in the deck
+**Path D: Logo File** — Read visually, extract colors, infer mood. See `references/brand-extraction.md` Section 4.
 
 ### Output: Design Tokens
 
+Produce a JSON object with these fields (see `references/brand-extraction.md` Section 5 for full schema):
+
 ```json
 {
-  "colors": {
-    "primary": "#da3d3d",
-    "accent": "#0f8e61",
-    "bg": "#faf9f6",
-    "text": "rgba(0,0,0,0.82)",
-    "darkBg": "#1a1a2e",
-    "darkText": "rgba(255,255,255,0.9)"
-  },
-  "fonts": {
-    "heading": "BrandHeading",
-    "body": "BrandBody",
-    "cjk": "Noto Sans SC",
-    "headingWeight": "600",
-    "bodyWeight": "400",
-    "letterSpacingHeading": "-0.5px",
-    "lineHeightBody": "1.65",
-    "source": "embedded",
-    "embeddedFonts": [
-      { "family": "BrandHeading", "weight": "600", "file": "/tmp/brand-heading-semibold.woff2" },
-      { "family": "BrandBody", "weight": "400", "file": "/tmp/brand-body-regular.woff2" }
-    ],
-    "googleFontsUrl": "Noto+Sans+SC:wght@400;700"
-  },
+  "colors": { "primary": "#da3d3d", "accent": "#0f8e61", "bg": "#faf9f6", "text": "rgba(0,0,0,0.82)" },
+  "fonts": { "heading": "Inter", "body": "Inter", "cjk": "Noto Sans SC", "source": "google" },
   "mood": "minimal",
-  "visualSummary": "Clean, spacious design with generous whitespace. Warm off-white backgrounds (#faf9f6), dark text with slight transparency. Headlines use medium-weight Inter with tight tracking. Hero section uses a muted photo with text overlay. CTAs are rounded pills in brand red. Overall feel: confident restraint.",
+  "visualSummary": "Clean, spacious design with warm off-white backgrounds...",
   "logo": "https://example.com/logo.svg",
-  "logoSvg": "<svg>...</svg>",
   "companyName": "ExampleCo",
   "watermark": "ExampleCo Confidential"
 }
 ```
 
-**`visualSummary`** is the most important field — it captures what you SAW, not what you parsed. This drives all downstream design decisions. If the visual summary doesn't match the hex values, trust the visual summary.
+**`visualSummary`** is the most important field — it captures what you SAW, not what you parsed. Trust the visual summary over hex values when they conflict.
 
-**`fonts.source`** — one of:
-- `"embedded"` — font files downloaded and will be base64-embedded in the HTML (best: 100% identical fonts)
-- `"google"` — using Google Fonts CDN link (good: exact match if the brand uses Google Fonts)
-- `"substituted"` — using a substitute from the Substitution Table (fallback: close but not identical)
-
-**`fonts.embeddedFonts`** — array of downloaded font files to base64-encode into the deck's `@font-face`. Only present when `source` is `"embedded"`.
-
-**`logoSvg`** — if the logo is an inline SVG on the website, extract the full SVG code here. This allows embedding the actual logo in the deck without external dependencies. If the logo is a raster image (PNG/JPG), use the `logo` URL field instead.
-
-Store these tokens in memory -- they feed into Step 6.
+Store these tokens in memory — they feed into Step 5.
 
 **References:**
+- `references/brand-extraction.md` for detailed extraction procedures, JS snippets, and font identification flow
 - `references/font-system.md` for curated pairings, substitution table, and typography fine-tuning
 - `references/html-engine.md` for the full token list and CSS variable mapping
 
@@ -434,196 +212,107 @@ Confirm the outline before moving to Step 3.
 
 ---
 
-## Step 3 -- Copy Confirmation
+## Step 3 -- Copy & Layout Confirmation
 
-Compile all slide text into a clean document for the founder to review and approve. **Do NOT proceed to narrative review until the founder confirms the copy.**
+Compile all slide content into a single document for the founder to review. This combines text copy and visual layout into one confirmation step — the founder sees exactly what each slide will contain and how it will be arranged.
 
-### 3a. Generate copy document
+### 3a. Generate copy-layout document
 
-Create a file `copy.md` in the project directory with:
+Create `copy.md` in the project directory. For each slide, include both the text content and a simple ASCII wireframe showing layout:
 
 ```markdown
-# [Company Name] Pitch Deck — Final Copy
+# [Company Name] Pitch Deck — Copy & Layout
 
-## Slide 1: Cover
-- Title: ...
-- Subtitle: ...
-- Tagline: ...
+## Slide 1: Cover (.slide.red)
+- Logo: [BRAND LOGO]
+- Eyebrow: SEED ROUND · $1M
+- Tagline: "One line that captures the company"
+- Subtitle: 一句话中文描述 / One-line English description
+- Footer: Confidential · April 2026
 
-## Slide 2: Problem
+## Slide 2: Problem (.slide.dark)
 - Eyebrow: PROBLEM
-- Headline: ...
-- Bullet 1: ...
-- Bullet 2: ...
-- Bullet 3: ...
-- Supporting stat: ...
-- Source: ...
-
-## Slide 3: Solution
-...
+- Headline: The Problem Statement
+- Layout: 3 pain points, left-aligned with icons
+  ┌──────────────────────────────┐
+  │  🔍 Pain 1 title + desc     │
+  │  💸 Pain 2 title + desc     │
+  │  ⏱ Pain 3 title + desc     │
+  │  [callout: key stat]        │
+  └──────────────────────────────┘
+- Supporting stat: 67% of freelancers report payment delays
+- Source: Payoneer 2025 Freelancer Survey
 
 (continue for all slides)
 ```
 
 For each slide, include:
 - Every piece of visible text (headline, bullets, stats, sources, footnotes)
+- **Layout type** in parentheses: `.slide`, `.slide.dark`, or `.slide.red`
+- **Visual elements** as ASCII wireframes or bracketed placeholders: `[CHART: 2x2 quadrant]`, `[DIAGRAM: flow]`, `[PHOTO: team]`
 - Data points with their sources
-- Any text that will appear in both ZH and EN (mark which is the primary language)
-- Placeholders for visual elements: `[CHART: 2x2 competitive quadrant]`, `[DIAGRAM: user flow]`, `[PHOTO: team headshots]`
+- Which language is primary (ZH or EN); the other will be translated
+
+For complex visual slides (competition quadrants, timelines, flow diagrams), sketch the layout and confirm element placement — these will be built as pure CSS (no charting libraries). Reference `references/slide-structures.md` for standard layout patterns.
 
 ### 3b. Present to founder
 
 Tell the founder:
-> Here is the complete copy for all slides. Please review carefully:
+> Here is the complete copy and layout for all slides. Please review:
 > - Are all data points accurate and sourced?
-> - Is the narrative flow correct?
-> - Any text you want to change?
+> - Does each slide layout capture what you want to show?
+> - Any text or layout changes?
 >
-> You can edit `copy.md` directly and tell me when you are done, or tell me what to change.
+> Edit `copy.md` directly or tell me what to change.
 
-Wait for the founder to confirm. Apply any edits they request. Re-present if changes are significant.
-
-### 3c. Lock copy
-
-Once confirmed, this copy becomes the source of truth for the rest of the workflow. Any later changes require coming back to this step.
+Wait for confirmation. Apply edits and re-present if changes are significant. Once confirmed, this document becomes the source of truth for all downstream steps.
 
 ---
 
 ## Step 4 -- Narrative Review
 
-**IMPORTANT: You MUST attempt to invoke the `office-hours` skill before falling back to self-review. Do NOT skip this step.**
+**IMPORTANT: You MUST attempt to invoke the `office-hours` skill before falling back to self-review.**
 
 Run the narrative review on the **confirmed copy** (from Step 3's `copy.md`), not the raw outline.
 
+**Reference:** `references/storytelling.md` provides the 7-beat narrative arc, YC/a16z frameworks, data presentation rules, and common mistakes. Use it to evaluate narrative structure and identify weak spots.
+
 ### 4a. Invoke office-hours (REQUIRED first attempt)
 
-**DO THIS NOW:** Call the Skill tool with skill="office-hours" and args="startup mode — review this pitch deck copy for investment readiness". Pass the full `copy.md` content in the args.
+**DO THIS NOW:** Call the Skill tool with skill="office-hours" and args="startup mode — review this pitch deck copy for investment readiness". Pass the full `copy.md` content.
 
-office-hours will stress-test six dimensions:
+office-hours will stress-test six dimensions: Demand Reality, Status Quo, Desperate Specificity, Narrowest Wedge, Observation, Future-fit.
 
-1. **Demand Reality** -- Is the market real? Are the data sources credible and recent?
-2. **Status Quo** -- How do people solve this today? Why is the current way tolerable?
-3. **Desperate Specificity** -- Is the target customer specific enough to find and sell to?
-4. **Narrowest Wedge** -- Is the entry point focused enough to win against incumbents?
-5. **Observation** -- What unique insight or unfair advantage backs this company?
-6. **Future-fit** -- Does this hold in 5 years, or will a platform shift kill it?
-
-After the review, present the critique to the founder. Iterate:
-1. Founder revises specific slides or bullets in `copy.md`
-2. Re-run the review on changed sections only
-3. Confirm final copy
+After the review, present the critique. Iterate: founder revises `copy.md` → re-run on changed sections → confirm final copy.
 
 ### 4b. Fallback (ONLY if office-hours skill is not installed)
 
-If the Skill tool returns an error indicating office-hours is not available, THEN perform a self-review covering:
-- **Data credibility** -- are stats sourced? Are sources recent (< 2 years old)?
-- **Narrative flow** -- does the story build logically from problem to ask?
-- **Specificity** -- are claims vague ("huge market") or precise ("$4.35B TAM in SEA freelancer payments")?
-- **Missing slides** -- is there a clear ask? Is team slide present? Is competition addressed honestly?
+If the Skill tool returns an error, perform a self-review using `references/storytelling.md` as your framework:
+- **Data credibility** -- are stats sourced and recent (< 2 years)?
+- **Narrative arc** -- does the story follow the 7-beat structure (hook → problem → insight → solution → proof → vision → ask)?
+- **Specificity** -- precise claims ("$4.35B TAM in SEA freelancer payments") vs vague ("huge market")?
+- **Missing elements** -- clear ask? Team slide? Honest competition? Data sources?
 
-Tell the founder: "The office-hours skill is not installed, so I performed a lightweight review. For a deeper YC-style critique, install Gstack and re-run Step 4."
-
----
-
-## Step 5 -- Slide Structure Design
-
-Before writing HTML, design the visual layout of each slide using markdown mockups. This step catches layout problems early — before they become expensive HTML rewrites.
-
-### 5a. Design each slide layout
-
-For each slide, create an ASCII/markdown wireframe showing element placement. Present them to the founder one by one or in batches.
-
-**Example formats:**
-
-Simple stat slide:
-```
-┌─────────────────────────────────┐
-│  EYEBROW                        │
-│                                 │
-│  Big Headline Text              │
-│                                 │
-│  ┌────────┐ ┌────────┐ ┌─────┐ │
-│  │ $4.35B │ │  120M  │ │ 47% │ │
-│  │  TAM   │ │ users  │ │ CAGR│ │
-│  └────────┘ └────────┘ └─────┘ │
-│                                 │
-│  Source: Grand View Research    │
-└─────────────────────────────────┘
-```
-
-Competition quadrant chart:
-```
-┌─────────────────────────────────┐
-│  COMPETITIVE LANDSCAPE          │
-│                                 │
-│  "Purpose-Built for X"          │
-│                                 │
-│        ▲ Full-stack             │
-│        │                        │
-│   ○D   │        ★ Us           │
-│        │                        │
-│  ──────┼──────────▶ Specialized │
-│        │                        │
-│   ○A   │   ○B      ○C          │
-│        │                        │
-│        ▼ Point solution         │
-│                                 │
-│  ○A=Competitor  ○B=Comp2  ...   │
-└─────────────────────────────────┘
-```
-
-Team slide with photos:
-```
-┌─────────────────────────────────┐
-│  TEAM                           │
-│                                 │
-│  ┌──────┐  ┌──────┐  ┌──────┐  │
-│  │[photo]│  │[photo]│  │[photo]│ │
-│  │ Name  │  │ Name  │  │ Name  │ │
-│  │ Role  │  │ Role  │  │ Role  │ │
-│  │ Bio   │  │ Bio   │  │ Bio   │ │
-│  └──────┘  └──────┘  └──────┘  │
-└─────────────────────────────────┘
-```
-
-### 5b. Handle visual elements
-
-For slides that need charts, diagrams, or illustrations:
-
-1. **Quadrant / positioning charts** — design as pure CSS (positioned dots + axis labels). Show the mockup and confirm axis labels + competitor placement with founder.
-2. **Flow diagrams** — design as flexbox with arrow connectors (CSS `::after` triangles). Show the flow sequence for confirmation.
-3. **Comparison tables** — design column structure, confirm which features/competitors to include.
-4. **Timeline / milestones** — design as horizontal or vertical sequence. Confirm milestone items.
-5. **Bar/pie charts** — design as CSS shapes (no JS charting library). Confirm data values.
-
-For each visual element, present the mockup and ask:
-> Does this layout capture what you want to show? Any changes to the positioning or labels?
-
-### 5c. Confirm all structures
-
-After all slide wireframes are reviewed, present a summary:
-> All slide layouts confirmed. Proceeding to HTML generation.
-> - X slides with standard text layout
-> - Y slides with custom visual elements (charts, diagrams, etc.)
-
-**Do NOT proceed to HTML until the founder approves all slide structures.**
+Tell the founder: "The office-hours skill is not installed. I used the storytelling framework for a lightweight review. Install Gstack for a deeper YC-style critique."
 
 ---
 
-## Step 6 -- HTML Generation
+## Step 5 -- HTML Generation
 
 Three-layer build process. All output goes into a single `index.html` file.
 
 ### Layer 1: Engine Setup
 
 1. Read `assets/base-template.html` -- the full HTML engine with auth gate, navigation, bilingual toggle, PDF export, and responsive scaling already built in.
-2. Replace all `{{PLACEHOLDER}}` tokens with design values:
-   - `{{DECK_PASSWORD}}` -- investor access code (ask founder, default: company name lowercase)
+2. Replace all `{{PLACEHOLDER}}` tokens with design values (see `references/html-engine.md` Section 1 for the full mapping):
+   - `{{PASSWORD}}` -- investor access code (ask founder, default: company name lowercase)
    - `{{DECK_TITLE}}` -- company name or deck title
-   - `{{WATERMARK_TEXT}}` -- confidential watermark for PDF export
-   - `{{PRIMARY_COLOR}}`, `{{ACCENT_COLOR}}`, `{{BG_COLOR}}`, `{{TEXT_COLOR}}` -- from design tokens
-   - `{{HEADING_FONT}}`, `{{BODY_FONT}}` -- from design tokens
-   - `{{GOOGLE_FONTS_URL}}` -- constructed from chosen fonts
+   - `{{WATERMARK}}` -- confidential watermark for PDF export
+   - `{{BRAND_LOGO_TEXT}}` -- brand name shown on auth gate
+   - `{{PRIMARY}}`, `{{PRIMARY_DARK}}`, `{{ACCENT}}` -- brand colors from design tokens
+   - `{{BG}}`, `{{BG_WARM}}`, `{{TEXT}}`, `{{TEXT_MID}}`, `{{TEXT_LIGHT}}`, `{{BORDER}}` -- surface/text colors
+   - `{{FONT_MAIN}}`, `{{FONT_SERIF}}` -- font stacks from design tokens
+   - `{{GOOGLE_FONTS_LINK}}` -- full `<link>` tag for Google Fonts
 3. Write the result to `index.html` in the project directory.
 
 ### Layer 2: Slide Content
@@ -663,7 +352,7 @@ Tell the founder: "The animate/delight skills are not installed. The deck uses b
 
 ---
 
-## Step 7 -- Visual QA
+## Step 6 -- Visual QA
 
 **DO THIS NOW:** Call the Skill tool with skill="browse" to start a headless browser QA session.
 
@@ -692,7 +381,7 @@ Tell the founder:
 
 ---
 
-## Step 8 -- Deployment
+## Step 7 -- Deployment
 
 Present four deployment options:
 
@@ -726,102 +415,18 @@ After deployment, provide the final URL and remind the founder to test the auth 
 
 ---
 
-## Slide HTML Conventions (Cheat Sheet)
+## Quick Reference
 
-Quick reference for generating slide markup. Full details in `references/html-engine.md`.
+Slide markup essentials. Full details in `references/html-engine.md`, slide templates in `references/slide-structures.md`.
 
-### Slide Types
+**Slide types:** `.slide` (light) | `.slide.dark` | `.slide.red` (primary color)
 
-```html
-<div class="slide">           <!-- light background (default) -->
-<div class="slide dark">      <!-- dark background -->
-<div class="slide red">       <!-- primary color background -->
-```
+**Bilingual:** `<span class="zh">中文</span><span class="en">English</span>` on every text element. CSS toggles via `body.lang-en`.
 
-### Bilingual Text
+**Layout:** `.flex` + `.col` (2-col), `.flex-3` (3-col), `.flex-4` (4-col). Spacing: `.mt-8` `.mt-16` `.mt-24` `.mt-32`.
 
-Every visible text element uses paired spans:
-```html
-<span class="zh">中文</span><span class="en">English</span>
-```
+**Stats:** `.beat-num` triggers count-up animation. Supports `data-target`/`data-prefix`/`data-suffix` attributes or inline bilingual spans.
 
-The CSS hides one language based on `body.lang-zh` or `body.lang-en` class. The toggle button switches the class.
+**Animation:** `.reveal-item` for staggered entrance. `.eyebrow` for section labels. `.card` / `.cap-card` for content cards.
 
-### Layout
-
-```html
-<div class="flex">
-  <div class="col">Left column</div>
-  <div class="col">Right column</div>
-</div>
-```
-
-Three columns: add a third `.col`. Unequal widths: use inline `flex` values.
-
-### Stat Card
-
-```html
-<div class="beat-num">
-  <span class="zh"><span class="stat-big">4.35</span><span>亿</span></span>
-  <span class="en"><span class="stat-big">435</span><span>M</span></span>
-</div>
-<div class="stat-label">
-  <span class="zh">全球自由职业者</span>
-  <span class="en">Global Freelancers</span>
-</div>
-```
-
-`.beat-num` triggers the count-up animation. `.stat-big` uses the heading font at a large size.
-
-### Eyebrow Label
-
-```html
-<div class="eyebrow">
-  <span class="zh">市场规模</span>
-  <span class="en">MARKET SIZE</span>
-</div>
-```
-
-Small uppercase label above a section title.
-
-### Staggered Reveal
-
-```html
-<div class="reveal-item">First (appears at 0.1s)</div>
-<div class="reveal-item">Second (appears at 0.22s)</div>
-<div class="reveal-item">Third (appears at 0.34s)</div>
-```
-
-Each `.reveal-item` gets a CSS custom property `--i` set automatically by JS. The stagger delay is `calc(0.1s + var(--i) * 0.12s)`.
-
-### Common Slide Patterns
-
-**Cover slide:** `.slide.dark` with `.logo` img, `<h1>` tagline, `.subtitle` paragraph.
-
-**Team slide:** `.slide` with `.eyebrow` + `<h2>`, then `.flex` grid of `.team-member` items each containing `.avatar` img, name, title, and bio spans.
-
-**Ask slide:** `.slide.red` with `<h2>` title, `.beat-num` for the funding amount, `.stat-label`, and a `.reveal-item` `<ul>` for fund allocation breakdown.
-
----
-
-## Error Handling
-
-- **Font loading failure** -- all `font-family` declarations include system font fallbacks
-- **Image loading failure** -- use `onerror` to swap to a colored placeholder div
-- **Auth bypass attempt** -- deck content is present in DOM but fully hidden via CSS until auth succeeds; no security-critical data should rely solely on client-side auth
-- **Print issues** -- `@media print` stylesheet hides navigation, auth gate, and animations; forces all slides to page-break layout
-- **Offline viewing** -- works fully offline except Google Fonts (falls back to system fonts)
-
----
-
-## File Structure
-
-After generation, the project directory contains:
-
-```
-project/
-  index.html          # The complete pitch deck (single file)
-  outline.md          # Slide outline used for generation (kept for reference)
-```
-
-No build step. No `node_modules`. No framework. Just open `index.html`.
+**Output:** Single `index.html` file. No build step, no dependencies. Just open in browser.
