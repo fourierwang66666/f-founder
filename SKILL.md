@@ -9,7 +9,9 @@ description: |
   Triggers: "pitch deck", "investor deck", "fundraising", "demo day", "series A/B/seed",
   "BP", "融资", "路演", "/founder-pitch-deck", "/f-founder",
   "competitive analysis", "competitor research", "竞品分析", "竞争对手",
-  "市场调研", "/founder-competitive-analysis".
+  "市场调研", "/founder-competitive-analysis",
+  "requirements clarification", "I want to build", "I have an idea", "需求澄清",
+  "我想做一个", "我有个想法", "/founder-requirements-clarification".
 user-invokable: true
 ---
 
@@ -43,6 +45,7 @@ If `JUST_UPGRADED <from> <to>`: tell the user "f-founder updated to v{to}!" and 
 |-------|---------|-------------|
 | `/founder-pitch-deck` | pitch deck, investor deck, BP, 融资材料, demo day slides | Generate a single-file HTML pitch deck with brand extraction, bilingual ZH/EN, auth gate, PDF export |
 | `/founder-competitive-analysis` | competitive analysis, competitor research, 竞品分析, 竞争对手, 市场调研 | Deep competitive analysis with parallel research, structured Markdown + PDF report |
+| `/founder-requirements-clarification` | requirements clarification, I want to build, I have an idea, 需求澄清, 我想做一个, 我有个想法 | From vague idea to focused MVP direction through dialogue + real community data |
 
 When the user's request matches a skill above, invoke it via the Skill tool.
 If the request is ambiguous, briefly list the relevant skills and ask which one to use.
