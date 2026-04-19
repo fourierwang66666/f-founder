@@ -1,0 +1,166 @@
+{
+  "_doc": "Pre-collected user archetypes for synthetic persona generation. Used as supplementary material when live community data is insufficient.",
+  "_disclaimer": "The sample_quotes in this file are illustrative examples crafted to represent common sentiments found in these communities. They are NOT direct quotes from specific Reddit posts. When building personas, prioritize real community data collected via reddit-profile.sh or WebSearch over these examples.",
+  "archetypes": [
+    {
+      "id": "remote-dev-senior",
+      "source_subreddits": ["experienceddevs", "remotework"],
+      "occupation": "Senior Software Engineer",
+      "context": "5+ years remote, distributed team across 3+ timezones",
+      "speech_style": "technical, direct, uses jargon freely, dry humor",
+      "sample_quotes": [
+        "Every PR review takes 8+ hours because of timezone gaps. By the time I get feedback, I've already context-switched to something else entirely.",
+        "I end up writing novels in Slack just to avoid scheduling yet another meeting across 3 TZs.",
+        "The worst part isn't the async itself, it's the uncertainty. Is my PR even in someone's queue?"
+      ],
+      "pain_points": ["async communication delays", "context switching", "meeting overload across timezones"]
+    },
+    {
+      "id": "startup-founder",
+      "source_subreddits": ["startups", "Entrepreneur", "SaaS"],
+      "occupation": "Startup Founder / Solo Entrepreneur",
+      "context": "bootstrapped or early-stage, wearing multiple hats",
+      "speech_style": "enthusiastic but stressed, business-focused, uses metrics",
+      "sample_quotes": [
+        "I spent 3 hours yesterday just trying to figure out which metrics actually matter for my stage.",
+        "Every SaaS tool wants $50/mo minimum. When you're pre-revenue, that adds up to real money.",
+        "I know I should talk to users more but honestly I don't even know where to find them."
+      ],
+      "pain_points": ["tool costs at early stage", "user acquisition", "prioritization overwhelm"]
+    },
+    {
+      "id": "working-parent",
+      "source_subreddits": ["workingmoms", "daddit", "Parenting"],
+      "occupation": "Full-time employee + parent",
+      "context": "juggling career and childcare, time-poor",
+      "speech_style": "pragmatic, slightly exhausted, values simplicity above all",
+      "sample_quotes": [
+        "I have maybe 45 minutes of free time a day after kids are asleep. Whatever tool you're building, it better not need a tutorial.",
+        "I deleted 3 apps last week because they all wanted me to set up 'just one more thing'.",
+        "The best product is one I can use with one hand while holding a toddler."
+      ],
+      "pain_points": ["zero free time", "onboarding friction", "cognitive overload"]
+    },
+    {
+      "id": "finance-anxious",
+      "source_subreddits": ["personalfinance", "povertyfinance"],
+      "occupation": "Various (income-stressed)",
+      "context": "living paycheck to paycheck or early career with debt",
+      "speech_style": "vulnerable, detail-oriented about money, skeptical of 'premium' anything",
+      "sample_quotes": [
+        "I end up having to explain to my wife why we're short on rent... again.",
+        "Every budgeting app assumes you have money to budget. I need an app that helps when there's nothing left.",
+        "I tried Mint, YNAB, spreadsheets. The problem isn't tracking, it's that there's not enough to track."
+      ],
+      "pain_points": ["budgeting tools assume surplus", "financial anxiety", "subscription fatigue"]
+    },
+    {
+      "id": "fitness-beginner",
+      "source_subreddits": ["fitness", "loseit", "bodyweightfitness"],
+      "occupation": "Various (new to fitness)",
+      "context": "trying to build a habit, intimidated by gym culture",
+      "speech_style": "self-deprecating, seeking encouragement, asks a lot of questions",
+      "sample_quotes": [
+        "I've started and stopped going to the gym probably 6 times this year. The programs online assume you already know what a 'superset' is.",
+        "Walked into the free weights area once, had no idea what to do, walked right back out.",
+        "I just want someone to tell me exactly what to do today. Not a 12-week periodized program."
+      ],
+      "pain_points": ["information overload", "intimidation", "lack of personalized guidance"]
+    },
+    {
+      "id": "ux-designer",
+      "source_subreddits": ["UXDesign", "userexperience", "web_design"],
+      "occupation": "UX/UI Designer",
+      "context": "mid-career, works in product team, fights for research budget",
+      "speech_style": "articulate, uses UX jargon, empathy-driven, occasionally frustrated with stakeholders",
+      "sample_quotes": [
+        "PM asked me to 'just make it look nicer' when the real problem is the entire user flow is broken.",
+        "We ship features based on what the loudest customer asks for, not what research shows.",
+        "I spend more time justifying why we need user research than actually doing user research."
+      ],
+      "pain_points": ["research not valued", "stakeholder misalignment", "design debt"]
+    },
+    {
+      "id": "digital-nomad",
+      "source_subreddits": ["digitalnomad", "solotravel", "remotework"],
+      "occupation": "Remote worker / Freelancer",
+      "context": "location-independent, travels frequently, timezone-fluid",
+      "speech_style": "casual, adventurous, pragmatic about tools, values flexibility",
+      "sample_quotes": [
+        "My biggest problem isn't finding wifi anymore, it's keeping a consistent routine when I change cities every 2 weeks.",
+        "I use 4 different VPNs because nothing works reliably in every country.",
+        "Client calls at 2am because they forget I'm not in their timezone anymore."
+      ],
+      "pain_points": ["routine disruption", "unreliable infrastructure", "timezone management"]
+    },
+    {
+      "id": "teacher-overworked",
+      "source_subreddits": ["Teachers", "edtech", "teaching"],
+      "occupation": "K-12 or university teacher",
+      "context": "underpaid, overworked, skeptical of 'revolutionary' edtech",
+      "speech_style": "passionate but burned out, practical, wary of tech promises",
+      "sample_quotes": [
+        "Every semester there's a new platform we're supposed to learn. None of them talk to each other.",
+        "I have 150 students and 45 minutes of prep time. Your AI grading tool better actually work.",
+        "The LMS was supposed to save time. Instead I spend an hour a week fighting with its upload system."
+      ],
+      "pain_points": ["tool fragmentation", "time poverty", "unfulfilled edtech promises"]
+    },
+    {
+      "id": "cn-internet-pm",
+      "market": "china",
+      "source_communities": ["知乎-互联网", "V2EX-职场", "即刻"],
+      "occupation": "互联网产品经理",
+      "context": "一线互联网公司或创业公司，996常态，KPI压力大",
+      "speech_style": "爱用互联网黑话，数据导向，吐槽但不放弃",
+      "sample_quotes": [
+        "老板说做个AI功能，但说不清到底要AI干嘛，就是'加个AI'",
+        "每次需求评审都在砍需求，砍完发现核心逻辑都砍没了",
+        "竞品分析做了20页PPT，最后老板说'你就照着XX抄一个'"
+      ],
+      "pain_points": ["需求模糊", "AI功能被当万能药", "竞品跟随导致同质化"]
+    },
+    {
+      "id": "cn-freelancer-creative",
+      "market": "china",
+      "source_communities": ["小红书-自由职业", "豆瓣-工作组", "即刻"],
+      "occupation": "自由职业/内容创作者",
+      "context": "从大厂离职或未进大厂，在小红书/B站/公众号做内容",
+      "speech_style": "文艺但务实，关注收入稳定性，对工具审美有要求",
+      "sample_quotes": [
+        "用AI写的稿子客户一眼就能看出来，反而要花更多时间改",
+        "接了个私活报价3000，光沟通需求就花了两天",
+        "工具太多了，Notion记笔记、飞书接任务、微信收款、石墨写稿，每天在四个app之间跳"
+      ],
+      "pain_points": ["工具碎片化", "AI生成内容质量不够", "freelance接单效率低"]
+    },
+    {
+      "id": "cn-college-student",
+      "market": "china",
+      "source_communities": ["知乎-大学生", "小红书-考研", "B站"],
+      "occupation": "大学生/研究生",
+      "context": "考研/求职/实习压力，信息焦虑，预算极低",
+      "speech_style": "网络用语多，自嘲式幽默，对免费工具敏感",
+      "sample_quotes": [
+        "ChatGPT写的论文查重率30%，改了一晚上还是20%",
+        "实习面试要准备八股文，但每家问的重点都不一样",
+        "订阅一个AI工具月费够我吃一周食堂了"
+      ],
+      "pain_points": ["AI辅助学术的合规性", "信息过载筛选难", "价格敏感"]
+    },
+    {
+      "id": "cn-smb-owner",
+      "market": "china",
+      "source_communities": ["V2EX-创业", "知乎-小微企业", "抖音-创业"],
+      "occupation": "小微企业主/个体户",
+      "context": "实体或小电商，团队3-10人，数字化程度低",
+      "speech_style": "直接务实，关注ROI，对新概念谨慎",
+      "sample_quotes": [
+        "什么AI客服，我的客户打电话过来就想找个真人说话",
+        "之前买了个SAAS系统，销售说的天花乱坠，用了一个月发现不如Excel",
+        "不是不想数字化，是学习成本太高，员工都不愿意用"
+      ],
+      "pain_points": ["数字化落地难", "SaaS性价比低", "员工接受度低"]
+    }
+  ]
+}

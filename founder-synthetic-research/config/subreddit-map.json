@@ -1,0 +1,23 @@
+{
+  "_doc": "Product domain -> relevant subreddits. Agent will supplement with AI inference.",
+  "remote-work": ["remotework", "digitalnomad", "workfromhome", "remote"],
+  "developer-tools": ["programming", "webdev", "devops", "software", "coding", "experienceddevs"],
+  "ai-ml": ["MachineLearning", "artificial", "LocalLLaMA", "ChatGPT", "ClaudeAI"],
+  "productivity": ["productivity", "getdisciplined", "ADHD", "Notion", "ObsidianMD"],
+  "fitness": ["fitness", "bodyweightfitness", "running", "loseit", "gainit", "xxfitness"],
+  "finance": ["personalfinance", "investing", "financialindependence", "CreditCards", "povertyfinance"],
+  "parenting": ["Parenting", "Mommit", "daddit", "beyondthebump", "workingmoms"],
+  "education": ["Teachers", "edtech", "learnprogramming", "languagelearning", "gradschool"],
+  "health": ["health", "mentalhealth", "anxiety", "depression", "HealthyFood"],
+  "ecommerce": ["ecommerce", "shopify", "dropship", "Entrepreneur", "smallbusiness"],
+  "gaming": ["gaming", "pcgaming", "indiegaming", "gamedev", "truegaming"],
+  "travel": ["travel", "solotravel", "backpacking", "TravelHacks", "digitalnomad"],
+  "food-delivery": ["doordash", "UberEats", "grubhub", "fooddelivery", "Cooking"],
+  "saas": ["SaaS", "startups", "Entrepreneur", "indiehackers", "microsaas"],
+  "design": ["design", "UXDesign", "userexperience", "web_design", "graphic_design"],
+  "crypto": ["CryptoCurrency", "Bitcoin", "ethereum", "defi", "CryptoMarkets"],
+  "real-estate": ["RealEstate", "FirstTimeHomeBuyer", "realestateinvesting", "Landlord"],
+  "pet-care": ["dogs", "cats", "pets", "dogtraining", "AskVet"],
+  "social-media": ["socialmedia", "Instagram", "TikTokCringe", "youtube", "content_marketing"],
+  "healthcare": ["medicine", "nursing", "pharmacy", "healthcare", "medicalschool"]
+}

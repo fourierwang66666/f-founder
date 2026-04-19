@@ -11,7 +11,9 @@ description: |
   "competitive analysis", "competitor research", "竞品分析", "竞争对手",
   "市场调研", "/founder-competitive-analysis",
   "requirements clarification", "I want to build", "I have an idea", "需求澄清",
-  "我想做一个", "我有个想法", "/founder-requirements-clarification".
+  "我想做一个", "我有个想法", "/founder-requirements-clarification",
+  "用户调研", "用户访谈", "需求验证", "synthetic research", "合成用户",
+  "/founder-synthetic-research".
 user-invokable: true
 ---
 
@@ -46,6 +48,7 @@ If `JUST_UPGRADED <from> <to>`: tell the user "f-founder updated to v{to}!" and 
 | `/founder-pitch-deck` | pitch deck, investor deck, BP, 融资材料, demo day slides | Generate a single-file HTML pitch deck with brand extraction, bilingual ZH/EN, auth gate, PDF export |
 | `/founder-competitive-analysis` | competitive analysis, competitor research, 竞品分析, 竞争对手, 市场调研 | Deep competitive analysis with parallel research, structured Markdown + PDF report |
 | `/founder-requirements-clarification` | requirements clarification, I want to build, I have an idea, 需求澄清, 我想做一个, 我有个想法 | From vague idea to focused MVP direction through dialogue + real community data |
+| `/founder-synthetic-research` | 用户调研, 用户访谈, 需求验证, synthetic research, 合成用户 | AI synthetic user research — Reddit-based personas, Mom Test interviews, structured report |
 
 When the user's request matches a skill above, invoke it via the Skill tool.
 If the request is ambiguous, briefly list the relevant skills and ask which one to use.
