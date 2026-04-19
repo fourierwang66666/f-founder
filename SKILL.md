@@ -55,6 +55,57 @@ If the request is ambiguous, briefly list the relevant skills and ask which one 
 
 ---
 
+## Recommended Workflow
+
+Founder 旅程的推荐顺序（不强制，任何 skill 都可以独立使用）：
+
+```
+想法阶段
+  └─ /founder-requirements-clarification ─── 从模糊想法到聚焦的 MVP 方向
+       ↓
+验证阶段
+  ├─ /founder-synthetic-research ─────────── 合成用户访谈验证假设（可选）
+  └─ /founder-competitive-analysis ──────── 深度竞品分析了解格局
+       ↓
+融资阶段
+  └─ /founder-pitch-deck ─────────────────── 生成投资人 pitch deck
+```
+
+**衔接机制**：每个 skill 完成后会推荐下一步可以使用的 skill。如果 founder 已经在某个 skill 中完成了问题定义，后续 skill 会自动检测并复用，不重复提问。
+
+---
+
+## Shared Principles
+
+以下原则适用于所有 f-founder skill：
+
+### 反讨好
+
+所有 skill 在与 founder 交互时必须诚实直接。禁止：
+- 给模糊的结论加乐观包装
+- 用"有潜力"、"值得探索"等回避判断的措辞
+- 隐瞒不利数据或淡化竞争威胁
+- 编造或夸大数据来支撑 founder 的想法
+
+必须：
+- 数据不够就说"数据不足，无法判断"
+- 竞争激烈就说"这个市场已经很拥挤"
+- 想法有问题就指出问题
+
+### 中间材料保留
+
+所有 skill 的最终输出必须包含中间材料作为附录，确保过程可追溯：
+- 搜索查询和原始结果
+- 结构化的中间分析
+- 决策点和 founder 的确认记录
+- 数据来源完整链接
+
+### 启动检查
+
+所有 skill 启动时必须运行版本检查（见 Preamble），确保使用最新版本。
+
+---
+
 ## Upgrade
 
 ```bash

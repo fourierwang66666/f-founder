@@ -10,6 +10,21 @@ metadata: {"openclaw":{"requires":{"bins":["node","python3","curl"]}}}
 user-invokable: true
 ---
 
+## Preamble (run first)
+
+```bash
+_FF_DIR="${FFOUNDER_DIR:-$(find ~/.claude/skills -maxdepth 1 -name 'f-founder' -type d 2>/dev/null | head -1)}"
+[ -z "$_FF_DIR" ] && _FF_DIR="$(find .claude/skills -maxdepth 1 -name 'f-founder' -type d 2>/dev/null | head -1)"
+if [ -n "$_FF_DIR" ] && [ -f "$_FF_DIR/bin/f-founder-update-check" ]; then
+  _UPD=$("$_FF_DIR/bin/f-founder-update-check" 2>/dev/null || true)
+  [ -n "$_UPD" ] && echo "$_UPD" || true
+fi
+_FF_VER=$(cat "$_FF_DIR/VERSION" 2>/dev/null | tr -d '[:space:]' || echo "unknown")
+echo "F-FOUNDER: v$_FF_VER"
+```
+
+If output shows `UPGRADE_AVAILABLE`: tell user to upgrade before proceeding.
+
 # Synthetic Research — AI 合成用户调研
 
 ## 这个 skill 做什么
@@ -22,6 +37,21 @@ user-invokable: true
 - 用户说"做用户调研"/"用户访谈"/"需求验证"/"synthetic research"
 - 用户描述一个产品想法并想了解目标用户痛点
 - 用户要求生成合成用户/虚拟用户
+
+## 反讨好规则
+
+合成用户调研的核心价值在于真实反馈，必须防止 AI 讨好 founder：
+
+**合成用户层面：**
+- 合成用户必须能说"不需要"、"不会用"、"太贵了"、"现有方案够用了"
+- 不允许所有合成用户都表示支持——至少 30% 应该持保留或否定态度
+- 合成用户的回答必须基于 Reddit 语料中的真实行为模式，不能为了让 founder 高兴而编造正面反馈
+
+**分析报告层面：**
+- 不美化调研结论（"用户普遍感兴趣" → 如实报告多少人正面、多少人负面、多少人无感）
+- 不隐藏负面信号（如果多数合成用户表示不需要，这就是最重要的发现）
+- 不把"没有反对"当成"支持"——沉默不是验证
+- 方法论声明必须明确标注"这是 AI 合成调研，不能替代真实用户访谈"
 
 ## 四阶段流程
 
@@ -103,6 +133,28 @@ bash scripts/reddit-profile.sh <subreddit> "<query>" --limit 15 --time month
 
 → **展示完整报告给用户**
 
+### 附录要求
+
+最终报告必须包含以下附录（不可省略）：
+
+**附录 A：合成用户人设卡**
+- 所有用户的完整人设卡（基础属性 + 心理属性 + 产品属性）
+- 每个用户绑定的 Reddit 语料来源
+
+**附录 B：完整访谈记录**
+- 每个合成用户的 8-12 轮完整对话记录（原文，不可删减）
+- 每轮对话的要点标注
+
+**附录 C：Reddit 语料采集记录**
+- 使用的 subreddit 列表和搜索关键词
+- 采集到的帖子/评论数量
+- 关键引用原文及链接
+
+**附录 D：分析方法说明**
+- 合成用户的属性分配逻辑
+- 访谈问题设计依据
+- 结论推导过程
+
 ### Phase 4: 深入追问（用户主导，可选）
 
 报告展示后，告知用户可以选择任意合成用户继续对话：
@@ -118,6 +170,13 @@ bash scripts/reddit-profile.sh <subreddit> "<query>" --limit 15 --time month
 3. **数据驱动** — 不编造 Reddit 语料中没有的经历
 4. **多样性** — 三层属性体系确保用户间有真实差异
 5. **Mom Test** — 只问过去行为事实，不问未来意愿
+
+## 下一步建议
+
+报告完成后，根据调研发现推荐：
+- 如果调研验证了需求 → "建议使用 `/founder-competitive-analysis` 了解竞争格局，找到差异化切入点"
+- 如果准备融资 → "建议使用 `/founder-pitch-deck` 生成 pitch deck，调研数据可直接用于 Problem 和 Market slide"
+- 如果方向仍不清晰 → "建议使用 `/founder-requirements-clarification` 重新梳理需求，缩小范围后再做调研"
 
 ## 文件参考
 

@@ -14,6 +14,21 @@ args:
     required: false
 ---
 
+## Preamble (run first)
+
+```bash
+_FF_DIR="${FFOUNDER_DIR:-$(find ~/.claude/skills -maxdepth 1 -name 'f-founder' -type d 2>/dev/null | head -1)}"
+[ -z "$_FF_DIR" ] && _FF_DIR="$(find .claude/skills -maxdepth 1 -name 'f-founder' -type d 2>/dev/null | head -1)"
+if [ -n "$_FF_DIR" ] && [ -f "$_FF_DIR/bin/f-founder-update-check" ]; then
+  _UPD=$("$_FF_DIR/bin/f-founder-update-check" 2>/dev/null || true)
+  [ -n "$_UPD" ] && echo "$_UPD" || true
+fi
+_FF_VER=$(cat "$_FF_DIR/VERSION" 2>/dev/null | tr -d '[:space:]' || echo "unknown")
+echo "F-FOUNDER: v$_FF_VER"
+```
+
+If output shows `UPGRADE_AVAILABLE`: tell user to upgrade before proceeding.
+
 # founder-pitch-deck: Startup Pitch Deck Generator
 
 Generate a single-file HTML pitch deck that looks like it was designed by a top-tier agency. The workflow walks the founder through 7 steps: design extraction, content input, copy & layout confirmation, narrative review, HTML generation, visual QA, and deployment.
@@ -61,6 +76,22 @@ If you prefer to install dependencies individually:
 ```
 
 ---
+
+## 反讨好规则
+
+Pitch deck 的价值在于帮 founder 赢得投资，不是讨好 founder。禁止：
+
+- 接受没有数据来源的数字（"市场很大" → 要求给出具体 TAM/SAM/SOM + 数据来源）
+- 接受虚荣指标（"10000 注册用户" → 追问 MAU、留存率、付费转化率）
+- 美化竞争格局（如果竞品在各维度都领先，不要画一个 founder 占右上角的矩阵）
+- 跳过弱点（如果没有 traction，不要假装有——直接说"你的 traction slide 需要更多真实数据"）
+- 给空洞的愿景配华丽的视觉效果来掩盖内容不足
+
+必须：
+- Traction slide 的每个数字都要有来源
+- Competition slide 必须诚实——如果竞品确实更强，在 narrative 中解释你的差异化
+- 问题描述必须来自真实用户痛点，不是 founder 的想象
+- 如果 founder 提供的内容不足以做一个有说服力的 deck，直接说，建议先做需求澄清或竞品分析
 
 <HARD-RULE>
 ## MANDATORY: Sub-Skill Invocation Policy
@@ -412,6 +443,26 @@ npx netlify deploy --prod --dir .
 Similar to Vercel. Founder's preference.
 
 After deployment, provide the final URL and remind the founder to test the auth gate from an incognito window.
+
+### 下一步建议
+
+Deck 完成后，根据 founder 的情况推荐：
+- 如果还没做过竞品分析 → "建议使用 `/founder-competitive-analysis` 做深度竞品研究，可以加强你的 Competition slide"
+- 如果 deck 内容薄弱 → "建议先使用 `/founder-requirements-clarification` 梳理需求，再回来完善 deck 内容"
+- 如果需要用户数据支撑 → "建议使用 `/founder-synthetic-research` 做合成用户访谈，获取 Problem slide 的真实用户引述"
+
+---
+
+## 中间材料保留
+
+在最终 `index.html` 之外，以下中间材料必须保留在项目目录中：
+
+- `design-tokens.json` — 提取的设计 tokens（颜色、字体、mood、logo）
+- `outline.md` — Step 2 生成的 slide outline
+- `copy.md` — Step 3 确认的文案和布局
+- `narrative-review.md` — Step 4 的 narrative review 反馈和修改记录
+
+这些文件确保过程可追溯，也方便后续迭代时不用从零开始。
 
 ---
 

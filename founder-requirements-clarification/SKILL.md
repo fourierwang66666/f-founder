@@ -11,6 +11,21 @@ description: |
 user-invokable: true
 ---
 
+## Preamble (run first)
+
+```bash
+_FF_DIR="${FFOUNDER_DIR:-$(find ~/.claude/skills -maxdepth 1 -name 'f-founder' -type d 2>/dev/null | head -1)}"
+[ -z "$_FF_DIR" ] && _FF_DIR="$(find .claude/skills -maxdepth 1 -name 'f-founder' -type d 2>/dev/null | head -1)"
+if [ -n "$_FF_DIR" ] && [ -f "$_FF_DIR/bin/f-founder-update-check" ]; then
+  _UPD=$("$_FF_DIR/bin/f-founder-update-check" 2>/dev/null || true)
+  [ -n "$_UPD" ] && echo "$_UPD" || true
+fi
+_FF_VER=$(cat "$_FF_DIR/VERSION" 2>/dev/null | tr -d '[:space:]' || echo "unknown")
+echo "F-FOUNDER: v$_FF_VER"
+```
+
+If output shows `UPGRADE_AVAILABLE`: tell user to upgrade before proceeding.
+
 # founder-requirements-clarification: 需求澄清
 
 帮产品发起人从一个模糊的想法出发，通过对话引导和真实数据调研，找到最痛的切入点和最小的 PMF 路径。
@@ -318,6 +333,28 @@ WebSearch 搜索 "[竞品名] app store reviews reddit"
 - **做减法**，不是做加法。MVP 的目标是验证假设，不是做一个完整产品。
 - **诚实**。如果你觉得这个方向不太行，直接说，附上理由。
 - **具体**。"做一个 MVP" 不是建议，"用 Typeform 做一个 20 题的需求验证问卷，投放到 r/xxx 社区" 才是建议。
+
+### 附录：中间材料
+
+最终输出必须包含以下附录：
+
+**附录 A：阶段判断与路由**
+- 判定的产品阶段（A/B/C/D）
+- 实际执行的步骤列表
+
+**附录 B：问题定义**
+- Step 1-3 的结构化输出（需求来源、核心问题、用户画像、核心场景）
+- 每一步 founder 的确认记录
+
+**附录 C：前提挑战记录**
+- Step 3.5 列出的所有前提
+- 每个前提的挑战结果和 founder 的回应
+
+**附录 D：痛点验证原始数据**
+- Reddit 搜索使用的查询（实际 query）
+- 中文社区搜索使用的查询
+- 原始搜索结果（帖子标题、链接、分数）
+- 引用的用户原话完整列表
 
 ---
 
